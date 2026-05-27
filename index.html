@@ -16,7 +16,7 @@
             --warning: #facc15;
             --critical: #ef4444;
             --info: #3b82f6;
-            --gray: #64748b;
+            --gray: #94a3b8;
             --light-bg: #f8fafc;
             --sidebar-width: 260px;
         }
@@ -45,7 +45,7 @@
             color: white;
             font-size: 1.1rem;
             font-weight: 800;
- text-align: center;
+            text-align: center;
             padding: 0 1rem 2rem 1rem;
             text-decoration: none;
             display: block;
@@ -273,6 +273,7 @@
                                         <option value="Perjalanan (Outbound)">Perjalanan (Outbound/Keluar)</option>
                                         <option value="Perjalanan (Inbound)">Perjalanan (Inbound/Akan Masuk)</option>
                                         <option value="Maintenance">Maintenance</option>
+                                        <option value="Tidak Aktif / Stop Refill">Tidak Aktif / Stop Refill ⚪</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -376,15 +377,20 @@
                 if(data.status.includes('Perjalanan')) vendorData[s].transit++;
             }
 
-            // Memasukkan format lencana total rotasi (Trip counter)
             let rotationDisplay = data.type === 'Isotank' ? `<span class="badge bg-dark fw-bold">${data.rotations || 0}x Trip</span>` : '<span class="text-muted">N/A</span>';
+            
+            // Pewarnaan Badge Status Terintegrasi Opsi Baru
+            let statusBadgeColor = 'bg-secondary';
+            if (data.status.includes('Full')) statusBadgeColor = 'bg-success';
+            else if (data.status.includes('Perjalanan')) statusBadgeColor = 'bg-warning text-dark';
+            else if (data.status === 'Tidak Aktif / Stop Refill') statusBadgeColor = 'bg-light text-muted border';
+            else if (data.status === 'Maintenance') statusBadgeColor = 'bg-danger';
 
-            // Menampilkan data ke tabel utama (Halaman 3)
             trackingTable.innerHTML += `<tr>
                 <td><b>${data.id}</b></td>
                 <td class="text-danger fw-bold">${data.poNumber || '-'}</td>
                 <td>${data.cargo}</td>
-                <td><span class="badge ${data.status.includes('Full') ? 'bg-success' : (data.status.includes('Perjalanan') ? 'bg-warning text-dark' : 'bg-secondary')}">${data.status}</span></td>
+                <td><span class="badge ${statusBadgeColor}磨">${data.status}</span></td>
                 <td><span class="badge bg-primary bg-opacity-10 text-primary px-3 border border-primary border-opacity-25">${data.trackingPos}</span></td>
                 <td>${rotationDisplay}</td>
                 <td>${data.dateOutbound || '-'}</td>
@@ -422,13 +428,13 @@
         if(myCharts.vendor) myCharts.vendor.destroy();
         if(myCharts.util) myCharts.util.destroy();
 
-        let statusLabels = ['Ready (Full)', 'Empty', 'In Transit', 'Maintenance'];
+        let statusLabels = ['Ready (Full)', 'Empty', 'In Transit', 'Maintenance / Stop'];
         let statusCount = [0, 0, 0, 0];
         masterData.forEach(d => {
             if(d.status.includes('Full') || d.status.includes('Terinstal')) statusCount[0]++;
             else if(d.status.includes('Kosong')) statusCount[1]++;
             else if(d.status.includes('Perjalanan')) statusCount[2]++;
-            else statusCount[3]++;
+            else statusCount[3]++; // Termasuk Maintenance & Stop Refill
         });
 
         myCharts.status = new Chart(ctxStatus, {
@@ -453,6 +459,7 @@
         });
     }
 
+    // FIX BUG FORM SUBMISSION (Tanda titik dua untuk data binding)
     document.getElementById('formLogistik').addEventListener('submit', function(e) {
         e.preventDefault();
         const currentId = document.getElementById('unitId').value.toUpperCase().trim();
@@ -467,8 +474,8 @@
             status: newStatus,
             trackingPos: document.getElementById('trackingPos').value,
             supplier: document.getElementById('supplier').value,
-            dateOutbound = document.getElementById('dateOutbound').value,
-            dateInboundSite = document.getElementById('dateInboundSite').value,
+            dateOutbound: document.getElementById('dateOutbound').value,
+            dateInboundSite: document.getElementById('dateInboundSite').value,
             rotations: 0
         };
 
@@ -483,8 +490,7 @@
         const existingIndex = masterData.findIndex(u => u.id === currentId);
         if (existingIndex >= 0) {
             newEntry.rotations = masterData[existingIndex].rotations || 0;
-            // Deteksi perubahan dari Perjalanan ke Inbound/Full untuk tambah +1 Trip otomatis
-            if (masterData[existingIndex].status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance') {
+            if (masterData[existingIndex].status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance' && !newStatus.includes('Stop')) {
                 newEntry.rotations += 1;
             }
             masterData[existingIndex] = newEntry;
@@ -545,7 +551,6 @@
         XLSX.writeFile(workbook, `Tracking_Isotank_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    // Load Data Awal
     renderTable();
     initCharts();
 </script>
