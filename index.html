@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Logistik Multi-Unit: Isotank & Container</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; }
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .status-badge, .type-badge, .track-badge { font-size: 0.85em; padding: 5px 10px; }
+        .section-title { font-size: 0.9rem; font-weight: bold; color: #555; text-transform: uppercase; border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-primary mb-4">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="#">🚛 Dashboard Logistik Terpadu (Isotank & Container Storage)</a>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-xl-3 col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white fw-bold">
+                    📌 Update Data Unit Lapangan
+                </div>
+                <div class="card-body">
+                    <form id="formLogistik">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tipe Unit</label>
+                            <select id="unitType" class="form-select bg-light fw-bold text-primary" required>
+                                <option value="Isotank">Isotank (Rotasi/Distribusi)</option>
+                                <option value="Container">Container Penyimpanan Sementara</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nomor Unit / ID Isotank</label>
+                            <input type="text" id="unitId" class="form-control" placeholder="Contoh: TANK-88 / CONT-02" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Isi Muatan</label>
+                            <input type="text" id="cargo" class="form-control" placeholder="Contoh: Methanol, LPG, CPO" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Status Operasional</label>
+                            <select id="status" class="form-select" required>
+                                <option value="Dalam Perjalanan">Dalam Perjalanan</option>
+                                <option value="Terisi (Penyimpanan)">Terisi (Penyimpanan)</option>
+                                <option value="Standby (Kosong)">Standby (Kosong)</option>
+                                <option value="Di Customer">Di Customer</option>
+                                <option value="Maintenance / Cleaning">Maintenance / Cleaning</option>
+                            </select>
+                        </div>
+
+                        <div id="isotankFields">
+                            <div class="section-title">Detail Logistik Isotank</div>
+                            <div class="mb-3">
+                                <label class="form-label">Supplier</label>
+                                <input type="text" id="supplier" class="form-control" placeholder="Nama Perusahaan Supplier">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tracking Posisi (Lokasi Saat Ini)</label>
+                                <select id="trackingPos" class="form-select">
+                                    <option value="HUB">HUB (Pusat)</option>
+                                    <option value="SUB">SUB (Cabang/Transit)</option>
+                                    <option value="VENDOR">VENDOR</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Qty Isotank</label>
+                                <input type="number" id="qty" class="form-control" placeholder="Jumlah/Volume (misal: 1)" min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Outbound</label>
+                                <input type="date" id="dateOutbound" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Inbound Site</label>
+                                <input type="date" id="dateInboundSite" class="form-control">
+                            </div>
+                        </div>
+
+                        <div id="containerFields" style="display: none;">
+                            <div class="section-title">Detail Storage Container</div>
+                            <div class="mb-3">
+                                <label class="form-label">Lokasi Gudang / Depot</label>
+                                <input type="text" id="location" class="form-control" placeholder="Contoh: Blok B Depot Utama">
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Tgl Masuk</label>
+                                    <input type="date" id="dateIn" class="form-control">
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Tgl Keluar</label>
+                                    <input type="date" id="dateOut" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold mt-3">Simpan / Update Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-9 col-lg-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">📋 Tabel Monitoring Lapangan Real-Time</span>
+                    <button class="btn btn-sm btn-danger fw-bold" onclick="clearData()">Hapus Semua Data</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle" style="font-size: 0.9rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No. Unit</th>
+                                    <th>Tipe</th>
+                                    <th>Muatan (Qty)</th>
+                                    <th>Status Operasional</th>
+                                    <th>Tracking / Lokasi</th>
+                                    <th>Supplier</th>
+                                    <th>Tgl Masuk / Outbound</th>
+                                    <th>Tgl Keluar / Inbound Site</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || [];
+
+    // Logika Ganti Form Input Berdasarkan Tipe Unit
+    document.getElementById('unitType').addEventListener('change', function() {
+        if (this.value === 'Isotank') {
+            document.getElementById('isotankFields').style.display = 'block';
+            document.getElementById('containerFields').style.display = 'none';
+        } else {
+            document.getElementById('isotankFields').style.display = 'none';
+            document.getElementById('containerFields').style.display = 'block';
+        }
+    });
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if(masterData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Belum ada armada atau storage terdata.</td></tr>';
+            return;
+        }
+
+        masterData.forEach((data) => {
+            // Badges Warna Status
+            let statusColor = 'bg-secondary';
+            if (data.status === 'Dalam Perjalanan') statusColor = 'bg-warning text-dark';
+            else if (data.status === 'Terisi (Penyimpanan)') statusColor = 'bg-success';
+            else if (data.status === 'Di Customer') statusColor = 'bg-info text-dark';
+            else if (data.status === 'Maintenance / Cleaning') statusColor = 'bg-danger';
+
+            // Badges Warna Tipe & Tracking
+            let typeBadge = data.type === 'Isotank' ? 'bg-primary' : 'bg-dark';
+            
+            let trackingDisplay = '-';
+            let supplierDisplay = data.supplier ? data.supplier : '-';
+            let date1Display = '-';
+            let date2Display = '-';
+            let cargoDisplay = `${data.cargo} <small class="text-muted">(${data.qty || '1'} Pcs)</small>`;
+
+            if (data.type === 'Isotank') {
+                let trackColor = data.trackingPos === 'HUB' ? 'bg-purple bg-opacity-75 text-white' : (data.trackingPos === 'SUB' ? 'bg-info' : 'bg-secondary');
+                // Custom CSS styling inline untuk warna HUB
+                let bgStyle = data.trackingPos === 'HUB' ? 'style="background-color: #6f42c1;"' : '';
+                trackingDisplay = `<span class="badge ${trackColor} track-badge" ${bgStyle}>${data.trackingPos}</span>`;
+                date1Display = data.dateOutbound ? data.dateOutbound : '<span class="text-muted">-</span>';
+                date2Display = data.dateInboundSite ? data.dateInboundSite : '<span class="text-muted">Belum Sampai</span>';
+            } else {
+                // Jika Container
+                trackingDisplay = `<i class="text-secondary">${data.location || 'Depot'}</i>`;
+                supplierDisplay = '<span class="text-muted">N/A</span>';
+                date1Display = data.dateIn ? data.dateIn : '<span class="text-muted">-</span>';
+                date2Display = data.dateOut ? data.dateOut : '<span class="text-muted text-italic">Masih di Storage</span>';
+                cargoDisplay = data.cargo;
+            }
+
+            const row = `<tr>
+                <td><strong>${data.id}</strong></td>
+                <td><span class="badge ${typeBadge} type-badge">${data.type}</span></td>
+                <td>${cargoDisplay}</td>
+                <td><span class="badge ${statusColor} status-badge">${data.status}</span></td>
+                <td>${trackingDisplay}</td>
+                <td>${supplierDisplay}</td>
+                <td>${date1Display}</td>
+                <td>${date2Display}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    document.getElementById('formLogistik').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const type = document.getElementById('unitType').value;
+        let newEntry = {
+            id: document.getElementById('unitId').value.toUpperCase().trim(),
+            type: type,
+            cargo: document.getElementById('cargo').value,
+            status: document.getElementById('status').value
+        };
+
+        // Mengambil field spesifik berdasarkan pilihan tipe
+        if (type === 'Isotank') {
+            newEntry.supplier = document.getElementById('supplier').value;
+            newEntry.trackingPos = document.getElementById('trackingPos').value;
+            newEntry.qty = document.getElementById('qty').value;
+            newEntry.dateOutbound = document.getElementById('dateOutbound').value;
+            newEntry.dateInboundSite = document.getElementById('dateInboundSite').value;
+        } else {
+            newEntry.location = document.getElementById('location').value;
+            newEntry.dateIn = document.getElementById('dateIn').value;
+            newEntry.dateOut = document.getElementById('dateOut').value;
+        }
+
+        const existingIndex = masterData.findIndex(unit => unit.id === newEntry.id);
+        if (existingIndex >= 0) {
+            masterData[existingIndex] = newEntry; 
+        } else {
+            masterData.push(newEntry); 
+        }
+
+        localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+        renderTable();
+        
+        // Reset form dan kembalikan default select ke kondisi awal yang pas
+        this.reset();
+        document.getElementById('unitType').value = type; 
+    });
+
+    function clearData() {
+        if(confirm("Apakah Anda yakin ingin menghapus seluruh riwayat data logistik?")) {
+            masterData = [];
+            localStorage.removeItem('advancedLogisticData');
+            renderTable();
+        }
+    }
+
+    renderTable();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
