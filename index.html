@@ -413,4 +413,41 @@
 
         const finalIndex = masterData.findIndex(unit => unit.id === currentId);
         if (finalIndex >= 0) {
-            masterData
+            masterData[finalIndex] = newEntry; 
+        } else {
+            if (!isEditMode) {
+                const checkDuplicate = masterData.findIndex(u => u.id === currentId);
+                if(checkDuplicate >= 0) {
+                    let oldData = masterData[checkDuplicate];
+                    newEntry.rotations = oldData.rotations || 0;
+                    if (oldData.status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance') {
+                        newEntry.rotations += 1;
+                    }
+                    masterData[checkDuplicate] = newEntry;
+                } else {
+                    masterData.push(newEntry);
+                }
+            } else {
+                masterData.push(newEntry);
+            }
+        }
+
+        localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+        cancelEdit();
+        renderTable();
+    });
+
+    function clearData() {
+        if(confirm("Hapus seluruh data logistik?")) {
+            masterData = [];
+            localStorage.removeItem('advancedLogisticData');
+            cancelEdit();
+            renderTable();
+        }
+    }
+
+    renderTable();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
