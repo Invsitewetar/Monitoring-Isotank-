@@ -45,7 +45,7 @@
             color: white;
             font-size: 1.1rem;
             font-weight: 800;
-            text-align: center;
+ text-align: center;
             padding: 0 1rem 2rem 1rem;
             text-decoration: none;
             display: block;
@@ -207,7 +207,7 @@
             <p class="text-muted m-0 small">Monitoring seluruh armada yang sedang berjalan maupun standby.</p>
             <button class="btn btn-sm btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
         </div>
-        <div class="table-responsive shadow-sm rounded-3"><table class="table table-custom table-hover align-middle m-0"><thead><tr><th>No. Unit</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Location Tracking</th><th>Outbound Date</th><th>Inbound Date</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
+        <div class="table-responsive shadow-sm rounded-3"><table class="table table-custom table-hover align-middle m-0"><thead><tr><th>No. Unit</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Location Tracking</th><th>Total Rotasi</th><th>Outbound Date</th><th>Inbound Date</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
     </div>
 
     <div id="page-aging" class="page-content">
@@ -312,7 +312,6 @@
 </div>
 
 <script>
-    // Tanggal Hari Ini di Header
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     let masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || [];
@@ -324,11 +323,11 @@
         document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
         
         document.getElementById(pageId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        
-        // Update Title di Header
-        const titleText = event.currentTarget.innerText.trim();
-        document.getElementById('header-title').innerText = titleText;
+        if(event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+            const titleText = event.currentTarget.innerText.trim();
+            document.getElementById('header-title').innerText = titleText;
+        }
 
         if(pageId === 'page-exec' || pageId === 'page-vendor' || pageId === 'page-utilization') initCharts();
         renderTable();
@@ -346,6 +345,8 @@
         const vendorTable = document.getElementById('vendorTable');
         const alertList = document.getElementById('alert-list');
         
+        if(!trackingTable) return;
+
         trackingTable.innerHTML = '';
         agingTable.innerHTML = '';
         vendorTable.innerHTML = '';
@@ -359,7 +360,6 @@
             if(data.status.includes('Perjalanan')) counts.transit++;
             if(data.status.includes('Full')) counts.full++;
 
-            // Aging calculation for transit
             let age = 0;
             if(data.status.includes('Perjalanan')) {
                 age = calculateAging(data.dateOutbound);
@@ -369,7 +369,6 @@
                 }
             }
 
-            // Vendor Performance Grouping
             if(data.type === 'Isotank') {
                 let s = data.supplier || 'No Vendor';
                 if(!vendorData[s]) vendorData[s] = { total: 0, transit: 0 };
@@ -377,19 +376,22 @@
                 if(data.status.includes('Perjalanan')) vendorData[s].transit++;
             }
 
-            // Page 3 Table
+            // Memasukkan format lencana total rotasi (Trip counter)
+            let rotationDisplay = data.type === 'Isotank' ? `<span class="badge bg-dark fw-bold">${data.rotations || 0}x Trip</span>` : '<span class="text-muted">N/A</span>';
+
+            // Menampilkan data ke tabel utama (Halaman 3)
             trackingTable.innerHTML += `<tr>
                 <td><b>${data.id}</b></td>
                 <td class="text-danger fw-bold">${data.poNumber || '-'}</td>
                 <td>${data.cargo}</td>
                 <td><span class="badge ${data.status.includes('Full') ? 'bg-success' : (data.status.includes('Perjalanan') ? 'bg-warning text-dark' : 'bg-secondary')}">${data.status}</span></td>
                 <td><span class="badge bg-primary bg-opacity-10 text-primary px-3 border border-primary border-opacity-25">${data.trackingPos}</span></td>
+                <td>${rotationDisplay}</td>
                 <td>${data.dateOutbound || '-'}</td>
                 <td>${data.dateInboundSite || '-'}</td>
                 <td><button class="btn btn-sm btn-outline-secondary py-0 fw-bold" onclick="editRow('${data.id}')"><i class="fas fa-pen"></i></button></td>
             </tr>`;
 
-            // Page 4 Table
             if(age > 0) {
                 let color = age > 8 ? 'text-danger fw-bold' : (age > 5 ? 'text-warning text-dark fw-bold' : 'text-success fw-bold');
                 let bgCircle = age > 8 ? 'bg-danger' : (age > 5 ? 'bg-warning' : 'bg-success');
@@ -397,13 +399,11 @@
             }
         });
 
-        // Page 2 Table
         Object.keys(vendorData).forEach(v => {
             let perf = vendorData[v].transit > 2 ? '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Delay Risk</span>' : '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Healthy</span>';
             vendorTable.innerHTML += `<tr><td><b>${v}</b></td><td>${vendorData[v].total} Unit</td><td>${vendorData[v].transit} Unit</td><td>${perf}</td></tr>`;
         });
 
-        // Update KPIs
         document.getElementById('kpi-total').innerText = counts.total;
         document.getElementById('kpi-transit').innerText = counts.transit;
         document.getElementById('kpi-overdue').innerText = counts.overdue;
@@ -412,15 +412,16 @@
     }
 
     function initCharts() {
-        const ctxStatus = document.getElementById('statusChart').getContext('2d');
-        const ctxVendor = document.getElementById('vendorChart').getContext('2d');
-        const ctxUtil = document.getElementById('utilChart').getContext('2d');
+        const ctxStatus = document.getElementById('statusChart')?.getContext('2d');
+        const ctxVendor = document.getElementById('vendorChart')?.getContext('2d');
+        const ctxUtil = document.getElementById('utilChart')?.getContext('2d');
+
+        if(!ctxStatus) return;
 
         if(myCharts.status) myCharts.status.destroy();
         if(myCharts.vendor) myCharts.vendor.destroy();
         if(myCharts.util) myCharts.util.destroy();
 
-        // Chart 1: Status (Bar)
         let statusLabels = ['Ready (Full)', 'Empty', 'In Transit', 'Maintenance'];
         let statusCount = [0, 0, 0, 0];
         masterData.forEach(d => {
@@ -436,7 +437,6 @@
             options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
         });
 
-        // Chart 2: Vendor (Horizontal Bar)
         let vendors = {};
         masterData.forEach(d => { if(d.supplier) vendors[d.supplier] = (vendors[d.supplier] || 0) + 1; });
         
@@ -446,7 +446,6 @@
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
         });
 
-        // Chart 3: Util (Donut)
         myCharts.util = new Chart(ctxUtil, {
             type: 'doughnut',
             data: { labels: ['In-Use (Full)', 'Available (Empty)'], datasets: [{ data: [statusCount[0], statusCount[1]], backgroundColor: ['#10b981', '#f1f5f9'], borderWidth: 0 }] },
@@ -454,33 +453,38 @@
         });
     }
 
-    // FORM LOGIC
     document.getElementById('formLogistik').addEventListener('submit', function(e) {
         e.preventDefault();
         const currentId = document.getElementById('unitId').value.toUpperCase().trim();
         const oldId = document.getElementById('oldUnitId').value;
+        const newStatus = document.getElementById('status').value;
 
         let newEntry = {
             id: currentId,
             type: document.getElementById('unitType').value,
             cargo: document.getElementById('cargo').value,
             poNumber: document.getElementById('poNumber').value.toUpperCase(),
-            status: document.getElementById('status').value,
+            status: newStatus,
             trackingPos: document.getElementById('trackingPos').value,
             supplier: document.getElementById('supplier').value,
-            dateOutbound: document.getElementById('dateOutbound').value,
-            dateInboundSite: document.getElementById('dateInboundSite').value,
+            dateOutbound = document.getElementById('dateOutbound').value,
+            dateInboundSite = document.getElementById('dateInboundSite').value,
             rotations: 0
         };
 
         if (isEditMode && oldId !== currentId) {
-            masterData = masterData.filter(u => u.id !== oldId);
+            const oldIndex = masterData.findIndex(u => u.id === oldId);
+            if(oldIndex >= 0) {
+                newEntry.rotations = masterData[oldIndex].rotations || 0;
+                masterData.splice(oldIndex, 1);
+            }
         }
 
         const existingIndex = masterData.findIndex(u => u.id === currentId);
         if (existingIndex >= 0) {
             newEntry.rotations = masterData[existingIndex].rotations || 0;
-            if (masterData[existingIndex].status.includes('Perjalanan') && !newEntry.status.includes('Perjalanan')) {
+            // Deteksi perubahan dari Perjalanan ke Inbound/Full untuk tambah +1 Trip otomatis
+            if (masterData[existingIndex].status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance') {
                 newEntry.rotations += 1;
             }
             masterData[existingIndex] = newEntry;
@@ -490,13 +494,12 @@
 
         localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
         cancelEdit();
-        showPage('page-tracking'); // Otomatis pindah ke halaman tracking setelah simpan
+        showPage('page-tracking');
     });
 
     function editRow(id) {
         const item = masterData.find(u => u.id === id);
         
-        // Simulasikan klik pada menu Update Data
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('page-input').classList.add('active');
@@ -542,7 +545,7 @@
         XLSX.writeFile(workbook, `Tracking_Isotank_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    // Auto load halaman Executive Summary pertama kali dibuka
+    // Load Data Awal
     renderTable();
     initCharts();
 </script>
