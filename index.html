@@ -3,449 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Logistik Multi-Unit: Isotank & Container</title>
+    <title>Isotank Management Enterprise Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
     <style>
-        body { background-color: #f4f7f6; }
-        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; margin-bottom: 20px; }
-        .status-badge, .type-badge, .track-badge { font-size: 0.85em; padding: 5px 10px; }
-        .section-title { font-size: 0.9rem; font-weight: bold; color: #555; text-transform: uppercase; border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; }
-        .dash-card { border-radius: 10px; color: white; padding: 15px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;}
-        .dash-card h3 { margin: 0; font-size: 2rem; font-weight: bold; }
-        .dash-card p { margin: 0; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; opacity: 0.9;}
-        .btn-edit { padding: 2px 8px; font-size: 0.8rem; font-weight: bold; }
+        :root {
+            --navy: #002147;
+            --emerald: #10b981;
+            --warning: #facc15;
+            --critical: #ef4444;
+            --info: #3b82f6;
+            --gray: #64748b;
+            --light-bg: #f8fafc;
+        }
+
+        body { background-color: var(--light-bg); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
+        /* Navbar Custom */
+        .navbar-custom { background-color: var(--navy); padding: 15px 0; }
+        .nav-link { color: rgba(255,255,255,0.7) !important; font-weight: 500; cursor: pointer; }
+        .nav-link.active { color: white !important; border-bottom: 3px solid var(--emerald); }
+
+        /* KPI Cards */
+        .kpi-card { border-radius: 12px; border: none; padding: 20px; transition: transform 0.2s; background: white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-value { font-size: 2.2rem; font-weight: 700; margin-bottom: 0; }
+        .kpi-label { color: var(--gray); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; }
+        
+        /* Layout */
+        .page-content { display: none; padding: 30px 0; }
+        .page-content.active { display: block; }
+        .chart-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); height: 100%; }
+
+        /* Tables */
+        .table-custom { background: white; border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
+        .table-custom thead { background-color: #f1f5f9; border-bottom: 2px solid #e2e8f0; }
+        
+        /* Alert Section */
+        .alert-urgent { border-left: 5px solid var(--critical); background: #fef2f2; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-dark bg-primary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top">
     <div class="container-fluid px-4">
-        <a class="navbar-brand" href="#">🚛 Dashboard Logistik Terpadu & Analisis Rotasi Isotank</a>
+        <a class="navbar-brand fw-bold" href="#"><i class="fas fa-truck-container me-2 text-emerald"></i> ISOTANK MONITORING</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" onclick="showPage('page-exec')">Executive Summary</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('page-vendor')">Vendor Monitoring</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('page-tracking')">Shipment Tracking</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('page-aging')">Aging Analysis</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showPage('page-utilization')">Utilization Report</a></li>
+                <li class="nav-item ms-lg-3"><a class="nav-link btn btn-emerald text-white px-3" onclick="showPage('page-input')"><i class="fas fa-plus me-1"></i> Update Data</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
 
 <div class="container-fluid px-4">
 
-    <div class="row mb-4 g-2" id="dashboard-summary">
-        <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-primary">
-            <p>Total Warehouse</p><h3 id="count-warehouse">0</h3>
-        </div></div>
-        <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-success">
-            <p>Full Warehouse</p><h3 id="count-full-warehouse">0</h3>
-        </div></div>
-        <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-secondary">
-            <p>Kosong Warehouse</p><h3 id="count-empty-warehouse">0</h3>
-        </div></div>
-        <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-info text-dark">
-            <p>Posisi HUB (SUB/KOE)</p><h3 id="count-hub">0</h3>
-        </div></div>
-        <div class="col-6 col-md-4 col-xl-1"><div class="dash-card bg-dark">
-            <p>Instal 25KT</p><h3 id="count-25kt">0</h3>
-        </div></div>
-        <div class="col-6 col-md-4 col-xl-1"><div class="dash-card bg-warning text-dark">
-            <p>Akan Masuk</p><h3 id="count-inbound">0</h3>
-        </div></div>
-        <div class="col-12 col-md-4 col-xl-2"><div class="dash-card bg-danger">
-            <p>Sudah Keluar</p><h3 id="count-outbound">0</h3>
-        </div></div>
+    <div id="page-exec" class="page-content active">
+        <div class="row g-4 mb-4">
+            <div class="col-md-3"><div class="kpi-card"><p class="kpi-label">Total Isotank</p><p class="kpi-value text-primary" id="kpi-total">0</p></div></div>
+            <div class="col-md-3"><div class="kpi-card"><p class="kpi-label">In Transit (Hub/Sub)</p><p class="kpi-value text-info" id="kpi-transit">0</p></div></div>
+            <div class="col-md-3"><div class="kpi-card"><p class="kpi-label">Overdue (>8 Days)</p><p class="kpi-value text-danger" id="kpi-overdue">0</p></div></div>
+            <div class="col-md-3"><div class="kpi-card"><p class="kpi-label">Utilization %</p><p class="kpi-value text-success" id="kpi-util">0%</p></div></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-8"><div class="chart-container"><h6 class="fw-bold mb-3">Status Distribution Overview</h6><canvas id="statusChart"></canvas></div></div>
+            <div class="col-lg-4"><div class="chart-container alert-urgent"><h6 class="fw-bold text-danger mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Critical Alert Section</h6><div id="alert-list" class="small">Tidak ada masalah hari ini.</div></div></div>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="col-xl-3 col-lg-4 mb-4">
-            <div class="card">
-                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <span id="formTitle">📌 Update Data Unit Lapangan</span>
-                    <button id="btnCancelEdit" class="btn btn-xs btn-outline-light" style="display:none; font-size:0.75rem;" onclick="cancelEdit()">Batal Edit</button>
-                </div>
-                <div class="card-body">
-                    <form id="formLogistik">
-                        <input type="hidden" id="oldUnitId">
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Tipe Unit</label>
-                            <select id="unitType" class="form-select bg-light fw-bold text-primary" required>
-                                <option value="Isotank">Isotank (Rotasi/Distribusi)</option>
-                                <option value="Container">Container Penyimpanan Sementara</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Nomor Unit / ID</label>
-                            <div class="input-group">
-                                <input type="text" id="unitId" class="form-control" placeholder="Contoh: SJIU2221705" required>
-                                <button class="btn btn-outline-warning" type="button" id="btnChangeId" style="display:none;" onclick="enableIdChange()">Ganti ID</button>
-                            </div>
-                            <small class="text-danger" id="changeIdWarning" style="display:none; font-size:0.75rem;">Mode Ganti Nomor Unit Aktif!</small>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Isi Muatan & Qty</label>
-                            <input type="text" id="cargo" class="form-control" placeholder="Contoh: Methanol" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Status Operasional</label>
-                            <select id="status" class="form-select" required>
-                                <option value="Terisi (Full)">Terisi (Full)</option>
-                                <option value="Standby (Kosong)">Standby (Kosong)</option>
-                                <option value="Terinstal">Terinstal (In Use)</option>
-                                <option value="Perjalanan (Akan Masuk)">Perjalanan (Akan Masuk / Inbound)</option>
-                                <option value="Perjalanan (Sudah Keluar)">Perjalanan (Sudah Keluar / Outbound)</option>
-                                <option value="Maintenance">Maintenance / Cleaning</option>
-                            </select>
-                        </div>
-
-                        <div id="isotankFields">
-                            <div class="section-title">Detail Logistik Isotank</div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-danger">Nomor PO</label>
-                                <input type="text" id="poNumber" class="form-control border-danger" placeholder="Contoh: PO-2026-001">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Tracking Posisi</label>
-                                <select id="trackingPos" class="form-select">
-                                    <option value="Warehouse">Warehouse</option>
-                                    <option value="HUB SUB">HUB SUB</option>
-                                    <option value="HUB KOE">HUB KOE</option>
-                                    <option value="25KT">25KT</option>
-                                    <option value="Vendor">Vendor</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Supplier</label>
-                                <input type="text" id="supplier" class="form-control" placeholder="Nama Supplier" value="-">
-                            </div>
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <label class="form-label">Tgl Outbound</label>
-                                    <input type="date" id="dateOutbound" class="form-control">
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label">Tgl Inbound</label>
-                                    <input type="date" id="dateInboundSite" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="containerFields" style="display: none;">
-                            <div class="section-title">Detail Storage Container</div>
-                            <div class="mb-3">
-                                <label class="form-label">Lokasi Gudang / Depot</label>
-                                <input type="text" id="location" class="form-control" placeholder="Contoh: Blok B Depot">
-                            </div>
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <label class="form-label">Tgl Masuk</label>
-                                    <input type="date" id="dateIn" class="form-control">
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label">Tgl Keluar</label>
-                                    <input type="date" id="dateOut" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 fw-bold mt-2" id="btnSubmitForm">Simpan / Update Data</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header bg-dark text-white fw-bold">🏢 Qty Unit per Supplier</div>
-                <div class="card-body p-0">
-                    <table class="table table-sm table-striped m-0" style="font-size: 0.85rem;">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Nama Supplier</th>
-                                <th class="text-center">Total Unit</th>
-                            </tr>
-                        </thead>
-                        <tbody id="supplierTableBody">
-                            <tr><td colspan="2" class="text-center text-muted">Belum ada data</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+    <div id="page-vendor" class="page-content">
+        <div class="row g-4">
+            <div class="col-lg-12"><div class="chart-container"><h6 class="fw-bold mb-4">Vendor Inventory Performance</h6><canvas id="vendorChart"></canvas></div></div>
+            <div class="col-lg-12">
+                <div class="table-responsive"><table class="table table-custom align-middle"><thead><tr><th>Vendor Name</th><th>Total Unit</th><th>Active Inbound</th><th>Status Performance</th></tr></thead><tbody id="vendorTable"></tbody></table></div>
             </div>
         </div>
+    </div>
 
-        <div class="col-xl-9 col-lg-8">
-            <div class="card">
-                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">📋 Tabel Monitoring Lapangan Real-Time</span>
-                    <button class="btn btn-sm btn-danger fw-bold" onclick="clearData()">Hapus Semua Data</button>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle m-0" style="font-size: 0.85rem;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Aksi</th>
-                                    <th>No. Unit</th>
-                                    <th>No. PO</th>
-                                    <th>Tipe</th>
-                                    <th>Muatan</th>
-                                    <th>Status</th>
-                                    <th>Posisi</th>
-                                    <th>Supplier</th>
-                                    <th>Total Rotasi</th>
-                                    <th>Tgl Keluar (Out)</th>
-                                    <th>Tgl Masuk (In)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody"></tbody>
-                        </table>
+    <div id="page-tracking" class="page-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold m-0 text-navy">Live Shipment Monitoring</h5>
+            <button class="btn btn-sm btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
+        </div>
+        <div class="table-responsive"><table class="table table-custom table-hover align-middle"><thead><tr><th>No. Unit</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Location Tracking</th><th>Outbound Date</th><th>Inbound Date</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
+    </div>
+
+    <div id="page-aging" class="page-content">
+        <div class="row g-4">
+            <div class="col-lg-12"><div class="chart-container alert-urgent"><h6 class="fw-bold text-danger mb-4"><i class="fas fa-clock me-2"></i>Aging Analysis (Refill Delay)</h6><div class="table-responsive"><table class="table table-custom align-middle text-center"><thead><tr><th>Unit ID</th><th>Supplier</th><th>Days in Transit</th><th>Status Color</th></tr></thead><tbody id="agingTable"></tbody></table></div></div></div>
+        </div>
+    </div>
+
+    <div id="page-utilization" class="page-content">
+        <div class="row g-4">
+            <div class="col-md-6"><div class="chart-container"><h6 class="fw-bold mb-3">Inventory Utilization (Full vs Empty)</h6><canvas id="utilChart"></canvas></div></div>
+            <div class="col-md-6"><div class="chart-container"><h6 class="fw-bold mb-3">Unit Type Distribution</h6><canvas id="typeChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <div id="page-input" class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card kpi-card">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center"><h5 class="fw-bold m-0" id="formTitle">Update Logistics Data</h5><button class="btn btn-sm btn-outline-danger" id="btnCancelEdit" style="display:none;" onclick="cancelEdit()">Batal</button></div>
+                    <div class="card-body">
+                        <form id="formLogistik">
+                            <input type="hidden" id="oldUnitId">
+                            <div class="mb-3"><label class="form-label small fw-bold">Tipe Unit</label><select id="unitType" class="form-select border-0 bg-light" required><option value="Isotank">Isotank</option><option value="Container">Container</option></select></div>
+                            <div class="mb-3"><label class="form-label small fw-bold">ID Isotank / Unit</label><div class="input-group"><input type="text" id="unitId" class="form-control" required><button class="btn btn-outline-warning btn-sm" type="button" id="btnChangeId" style="display:none;" onclick="enableIdChange()">Ganti</button></div></div>
+                            <div class="row"><div class="col-md-6 mb-3"><label class="form-label small fw-bold">Muatan</label><input type="text" id="cargo" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label small fw-bold">Nomor PO</label><input type="text" id="poNumber" class="form-control text-danger fw-bold"></div></div>
+                            <div class="mb-3"><label class="form-label small fw-bold">Status Operasional</label><select id="status" class="form-select" required><option value="Terisi (Full)">Terisi (Full)</option><option value="Standby (Kosong)">Standby (Kosong)</option><option value="Terinstal">Terinstal (In Use)</option><option value="Perjalanan (Outbound)">Perjalanan (Outbound)</option><option value="Maintenance">Maintenance</option></select></div>
+                            <div class="mb-3"><label class="form-label small fw-bold">Tracking Posisi</label><select id="trackingPos" class="form-select"><option value="Warehouse">Warehouse</option><option value="HUB SUB">HUB SUB</option><option value="HUB KOE">HUB KOE</option><option value="25KT">25KT</option><option value="Vendor">Vendor</option></select></div>
+                            <div class="mb-3"><label class="form-label small fw-bold">Supplier</label><input type="text" id="supplier" class="form-control"></div>
+                            <div class="row"><div class="col-6 mb-3"><label class="form-label small fw-bold">Tgl Outbound</label><input type="date" id="dateOutbound" class="form-control"></div><div class="col-6 mb-3"><label class="form-label small fw-bold">Tgl Inbound</label><input type="date" id="dateInboundSite" class="form-control"></div></div>
+                            <button type="submit" class="btn btn-navy w-100 fw-bold mt-3 text-white" style="background-color: var(--navy);" id="btnSubmitForm">Simpan Data</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
     let masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || [];
     let isEditMode = false;
+    let myCharts = {};
 
-    document.getElementById('unitType').addEventListener('change', function() {
-        toggleFields(this.value);
-    });
-
-    function toggleFields(type) {
-        if (type === 'Isotank') {
-            document.getElementById('isotankFields').style.display = 'block';
-            document.getElementById('containerFields').style.display = 'none';
-        } else {
-            document.getElementById('isotankFields').style.display = 'none';
-            document.getElementById('containerFields').style.display = 'block';
-        }
+    function showPage(pageId) {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        if(pageId === 'page-exec' || pageId === 'page-vendor' || pageId === 'page-utilization') initCharts();
+        renderTable();
     }
 
-    function updateDashboardAndSuppliers() {
-        let warehouse = 0, fullWarehouse = 0, emptyWarehouse = 0, hub = 0, inst25kt = 0, inbound = 0, outbound = 0;
-        let supplierCounts = {};
-
-        masterData.forEach(data => {
-            if (data.type === 'Isotank') {
-                if (data.trackingPos === 'Warehouse') warehouse++;
-                if (data.trackingPos === 'Warehouse' && data.status === 'Terisi (Full)') fullWarehouse++;
-                if (data.trackingPos === 'Warehouse' && data.status === 'Standby (Kosong)') emptyWarehouse++;
-                if (data.trackingPos === 'HUB SUB' || data.trackingPos === 'HUB KOE') hub++;
-                if (data.trackingPos === '25KT' || data.status === 'Terinstal') inst25kt++;
-                if (data.status === 'Perjalanan (Akan Masuk)') inbound++;
-                if (data.status === 'Perjalanan (Sudah Keluar)') outbound++;
-
-                let supName = data.supplier ? data.supplier.trim() : '-';
-                if(supName === '') supName = '-';
-                supplierCounts[supName] = (supplierCounts[supName] || 0) + 1;
-            }
-        });
-
-        document.getElementById('count-warehouse').innerText = warehouse;
-        document.getElementById('count-full-warehouse').innerText = fullWarehouse;
-        document.getElementById('count-empty-warehouse').innerText = emptyWarehouse;
-        document.getElementById('count-hub').innerText = hub;
-        document.getElementById('count-25kt').innerText = inst25kt;
-        document.getElementById('count-inbound').innerText = inbound;
-        document.getElementById('count-outbound').innerText = outbound;
-
-        const supTbody = document.getElementById('supplierTableBody');
-        supTbody.innerHTML = '';
-        let keys = Object.keys(supplierCounts);
-        if(keys.length === 0) {
-            supTbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">Belum ada data</td></tr>';
-        } else {
-            keys.forEach(sup => {
-                supTbody.innerHTML += `<tr><td><strong>${sup}</strong></td><td class="text-center fw-bold text-primary">${supplierCounts[sup]} Unit</td></tr>`;
-            });
-        }
+    function calculateAging(dateStr) {
+        if(!dateStr) return 0;
+        const diff = new Date() - new Date(dateStr);
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
     }
 
     function renderTable() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        updateDashboardAndSuppliers(); 
+        const trackingTable = document.getElementById('trackingTable');
+        const agingTable = document.getElementById('agingTable');
+        const vendorTable = document.getElementById('vendorTable');
+        const alertList = document.getElementById('alert-list');
+        
+        trackingTable.innerHTML = '';
+        agingTable.innerHTML = '';
+        vendorTable.innerHTML = '';
+        alertList.innerHTML = '';
 
-        if(masterData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4">Belum ada armada terdata.</td></tr>';
-            return;
-        }
+        let counts = { total: 0, transit: 0, overdue: 0, full: 0 };
+        let vendorData = {};
 
-        masterData.forEach((data) => {
-            let statusColor = 'bg-secondary';
-            if (data.status.includes('Perjalanan')) statusColor = 'bg-warning text-dark';
-            else if (data.status === 'Terisi (Full)') statusColor = 'bg-success';
-            else if (data.status === 'Terinstal') statusColor = 'bg-info text-dark';
-            else if (data.status === 'Maintenance') statusColor = 'bg-danger';
+        masterData.forEach(data => {
+            counts.total++;
+            if(data.status.includes('Perjalanan')) counts.transit++;
+            if(data.status.includes('Full')) counts.full++;
 
-            let typeBadge = data.type === 'Isotank' ? 'bg-primary' : 'bg-dark';
-            let trackingDisplay = '-', supplierDisplay = '-', date1 = '-', date2 = '-', poDisplay = '-';
-            let rotationDisplay = data.rotations ? `<span class="badge bg-dark fw-bold">${data.rotations}x Trip</span>` : '<span class="text-muted">0x</span>';
-
-            if (data.type === 'Isotank') {
-                let trackColor = 'bg-secondary';
-                if(data.trackingPos === 'HUB SUB' || data.trackingPos === 'HUB KOE') trackColor = 'bg-purple text-white';
-                if(data.trackingPos === 'Warehouse' || data.trackingPos === '25KT') trackColor = 'bg-success';
-                
-                let bgStyle = (data.trackingPos === 'HUB SUB' || data.trackingPos === 'HUB KOE') ? 'style="background-color: #6f42c1;"' : '';
-                trackingDisplay = `<span class="badge ${trackColor} track-badge" ${bgStyle}>${data.trackingPos}</span>`;
-                supplierDisplay = data.supplier || '-';
-                poDisplay = data.poNumber ? `<span class="fw-bold text-danger">${data.poNumber}</span>` : '-';
-                date1 = data.dateOutbound || '-';
-                date2 = data.dateInboundSite || '-';
-            } else {
-                trackingDisplay = `<i class="text-secondary">${data.location || 'Depot'}</i>`;
-                supplierDisplay = 'N/A';
-                poDisplay = '<span class="text-muted">N/A</span>';
-                rotationDisplay = '<span class="text-muted">N/A</span>';
-                date1 = data.dateIn || '-';
-                date2 = data.dateOut || '-';
+            // Aging calculation for transit
+            let age = 0;
+            if(data.status.includes('Perjalanan')) {
+                age = calculateAging(data.dateOutbound);
+                if(age > 8) {
+                    counts.overdue++;
+                    alertList.innerHTML += `<div class="mb-2"><span class="badge bg-danger me-2">LATE</span> <b>${data.id}</b> sudah ${age} hari di perjalanan.</div>`;
+                }
             }
 
-            const row = `<tr>
-                <td><button class="btn btn-warning btn-sm btn-edit" onclick="editRow('${data.id}')">Edit ✏️</button></td>
-                <td><strong>${data.id}</strong></td>
-                <td>${poDisplay}</td>
-                <td><span class="badge ${typeBadge} type-badge">${data.type}</span></td>
-                <td class="fw-semibold">${data.cargo}</td>
-                <td><span class="badge ${statusColor} status-badge">${data.status}</span></td>
-                <td>${trackingDisplay}</td>
-                <td>${supplierDisplay}</td>
-                <td>${rotationDisplay}</td>
-                <td>${date1}</td>
-                <td>${date2}</td>
+            // Vendor Performance Grouping
+            if(data.type === 'Isotank') {
+                let s = data.supplier || 'No Vendor';
+                if(!vendorData[s]) vendorData[s] = { total: 0, transit: 0 };
+                vendorData[s].total++;
+                if(data.status.includes('Perjalanan')) vendorData[s].transit++;
+            }
+
+            // Page 3 Table
+            trackingTable.innerHTML += `<tr>
+                <td><b>${data.id}</b></td>
+                <td class="text-danger fw-bold">${data.poNumber || '-'}</td>
+                <td>${data.cargo}</td>
+                <td><span class="badge ${data.status.includes('Full') ? 'bg-success' : 'bg-warning'}">${data.status}</span></td>
+                <td><span class="badge bg-primary bg-opacity-10 text-primary px-3">${data.trackingPos}</span></td>
+                <td>${data.dateOutbound || '-'}</td>
+                <td>${data.dateInboundSite || '-'}</td>
+                <td><button class="btn btn-sm btn-outline-primary py-0" onclick="editRow('${data.id}')">Edit</button></td>
             </tr>`;
-            tbody.innerHTML += row;
+
+            // Page 4 Table
+            if(age > 0) {
+                let color = age > 8 ? 'text-danger fw-bold' : (age > 5 ? 'text-warning' : 'text-success');
+                agingTable.innerHTML += `<tr><td>${data.id}</td><td>${data.supplier}</td><td class="${color}">${age} Hari</td><td><i class="fas fa-circle ${color.replace('text-', 'bg-')}"></i></td></tr>`;
+            }
+        });
+
+        // Page 2 Table
+        Object.keys(vendorData).forEach(v => {
+            let perf = vendorData[v].transit > 2 ? '⚠️ Warning' : '🟢 Healthy';
+            vendorTable.innerHTML += `<tr><td><b>${v}</b></td><td>${vendorData[v].total} Unit</td><td>${vendorData[v].transit}</td><td>${perf}</td></tr>`;
+        });
+
+        // Update KPIs
+        document.getElementById('kpi-total').innerText = counts.total;
+        document.getElementById('kpi-transit').innerText = counts.transit;
+        document.getElementById('kpi-overdue').innerText = counts.overdue;
+        document.getElementById('kpi-util').innerText = counts.total > 0 ? Math.round((counts.full / counts.total) * 100) + '%' : '0%';
+        if(alertList.innerHTML === '') alertList.innerHTML = 'Tidak ada keterlambatan hari ini.';
+    }
+
+    function initCharts() {
+        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        const ctxVendor = document.getElementById('vendorChart').getContext('2d');
+        const ctxUtil = document.getElementById('utilChart').getContext('2d');
+
+        if(myCharts.status) myCharts.status.destroy();
+        if(myCharts.vendor) myCharts.vendor.destroy();
+        if(myCharts.util) myCharts.util.destroy();
+
+        // Chart 1: Status (Bar)
+        let statusLabels = ['Full', 'Empty', 'In Transit', 'Maintenance'];
+        let statusCount = [0, 0, 0, 0];
+        masterData.forEach(d => {
+            if(d.status.includes('Full')) statusCount[0]++;
+            else if(d.status.includes('Kosong')) statusCount[1]++;
+            else if(d.status.includes('Perjalanan')) statusCount[2]++;
+            else statusCount[3]++;
+        });
+
+        myCharts.status = new Chart(ctxStatus, {
+            type: 'bar',
+            data: { labels: statusLabels, datasets: [{ label: 'Unit Count', data: statusCount, backgroundColor: ['#10b981', '#facc15', '#3b82f6', '#64748b'] }] },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Chart 2: Vendor (Horizontal Bar)
+        let vendors = {};
+        masterData.forEach(d => { if(d.supplier) vendors[d.supplier] = (vendors[d.supplier] || 0) + 1; });
+        
+        myCharts.vendor = new Chart(ctxVendor, {
+            type: 'bar',
+            data: { labels: Object.keys(vendors), datasets: [{ label: 'Isotank provided', data: Object.values(vendors), backgroundColor: '#002147' }] },
+            options: { indexAxis: 'y', responsive: true }
+        });
+
+        // Chart 3: Util (Donut)
+        myCharts.util = new Chart(ctxUtil, {
+            type: 'doughnut',
+            data: { labels: ['In-Use (Full)', 'Available (Empty)'], datasets: [{ data: [statusCount[0], statusCount[1]], backgroundColor: ['#10b981', '#f1f5f9'] }] },
+            options: { cutout: '70%' }
         });
     }
 
+    // FORM LOGIC (SAMA SEPERTI SEBELUMNYA)
+    document.getElementById('formLogistik').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const currentId = document.getElementById('unitId').value.toUpperCase().trim();
+        const oldId = document.getElementById('oldUnitId').value;
+
+        let newEntry = {
+            id: currentId,
+            type: document.getElementById('unitType').value,
+            cargo: document.getElementById('cargo').value,
+            poNumber: document.getElementById('poNumber').value,
+            status: document.getElementById('status').value,
+            trackingPos: document.getElementById('trackingPos').value,
+            supplier: document.getElementById('supplier').value,
+            dateOutbound: document.getElementById('dateOutbound').value,
+            dateInboundSite: document.getElementById('dateInboundSite').value,
+            rotations: 0
+        };
+
+        if (isEditMode && oldId !== currentId) {
+            masterData = masterData.filter(u => u.id !== oldId);
+        }
+
+        const existingIndex = masterData.findIndex(u => u.id === currentId);
+        if (existingIndex >= 0) masterData[existingIndex] = newEntry;
+        else masterData.push(newEntry);
+
+        localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+        cancelEdit();
+        showPage('page-exec');
+    });
+
     function editRow(id) {
         const item = masterData.find(u => u.id === id);
-        if(!item) return;
-
+        showPage('page-input');
         isEditMode = true;
-        document.getElementById('formTitle').innerText = `✏️ Mode Edit: ${item.id}`;
+        document.getElementById('formTitle').innerText = `Edit Unit: ${item.id}`;
         document.getElementById('btnCancelEdit').style.display = 'block';
-        document.getElementById('btnSubmitForm').innerText = 'Simpan Perubahan';
-        
         document.getElementById('unitId').value = item.id;
         document.getElementById('unitId').readOnly = true;
         document.getElementById('oldUnitId').value = item.id;
-        document.getElementById('btnChangeId').style.display = 'block';
-
         document.getElementById('unitType').value = item.type;
         document.getElementById('cargo').value = item.cargo;
+        document.getElementById('poNumber').value = item.poNumber || '';
         document.getElementById('status').value = item.status;
-
-        toggleFields(item.type);
-
-        if(item.type === 'Isotank') {
-            document.getElementById('poNumber').value = item.poNumber || '';
-            document.getElementById('supplier').value = item.supplier || '-';
-            document.getElementById('trackingPos').value = item.trackingPos || 'Warehouse';
-            document.getElementById('dateOutbound').value = item.dateOutbound || '';
-            document.getElementById('dateInboundSite').value = item.dateInboundSite || '';
-        } else {
-            document.getElementById('location').value = item.location || '';
-            document.getElementById('dateIn').value = item.dateIn || '';
-            document.getElementById('dateOut').value = item.dateOut || '';
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function enableIdChange() {
-        document.getElementById('unitId').readOnly = false;
-        document.getElementById('unitId').focus();
-        document.getElementById('changeIdWarning').style.display = 'block';
+        document.getElementById('trackingPos').value = item.trackingPos;
+        document.getElementById('supplier').value = item.supplier;
+        document.getElementById('dateOutbound').value = item.dateOutbound;
+        document.getElementById('dateInboundSite').value = item.dateInboundSite;
     }
 
     function cancelEdit() {
         isEditMode = false;
         document.getElementById('formLogistik').reset();
-        document.getElementById('formTitle').innerText = '📌 Update Data Unit Lapangan';
-        document.getElementById('btnCancelEdit').style.display = 'none';
-        document.getElementById('btnChangeId').style.display = 'none';
-        document.getElementById('changeIdWarning').style.display = 'none';
         document.getElementById('unitId').readOnly = false;
-        document.getElementById('btnSubmitForm').innerText = 'Simpan / Update Data';
+        document.getElementById('btnCancelEdit').style.display = 'none';
+        document.getElementById('formTitle').innerText = 'Update Logistics Data';
     }
 
-    document.getElementById('formLogistik').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const type = document.getElementById('unitType').value;
-        const currentId = document.getElementById('unitId').value.toUpperCase().trim();
-        const oldId = document.getElementById('oldUnitId').value;
-        const newStatus = document.getElementById('status').value;
+    function enableIdChange() { document.getElementById('unitId').readOnly = false; }
 
-        let newEntry = {
-            id: currentId,
-            type: type,
-            cargo: document.getElementById('cargo').value,
-            status: newStatus,
-            rotations: 0
-        };
-
-        if (type === 'Isotank') {
-            newEntry.poNumber = document.getElementById('poNumber').value.toUpperCase().trim();
-            newEntry.supplier = document.getElementById('supplier').value || '-';
-            newEntry.trackingPos = document.getElementById('trackingPos').value;
-            newEntry.dateOutbound = document.getElementById('dateOutbound').value;
-            newEntry.dateInboundSite = document.getElementById('dateInboundSite').value;
-        } else {
-            newEntry.location = document.getElementById('location').value;
-            newEntry.dateIn = document.getElementById('dateIn').value;
-            newEntry.dateOut = document.getElementById('dateOut').value;
-        }
-
-        if (isEditMode) {
-            if (oldId !== currentId) {
-                const oldIndex = masterData.findIndex(u => u.id === oldId);
-                if (oldIndex >= 0) {
-                    newEntry.rotations = masterData[oldIndex].rotations || 0;
-                    masterData.splice(oldIndex, 1);
-                }
-            } else {
-                const index = masterData.findIndex(u => u.id === currentId);
-                if (index >= 0) {
-                    let oldData = masterData[index];
-                    newEntry.rotations = oldData.rotations || 0;
-                    if (oldData.status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance') {
-                        newEntry.rotations += 1;
-                    }
-                }
-            }
-        }
-
-        const finalIndex = masterData.findIndex(unit => unit.id === currentId);
-        if (finalIndex >= 0) {
-            masterData[finalIndex] = newEntry; 
-        } else {
-            if (!isEditMode) {
-                const checkDuplicate = masterData.findIndex(u => u.id === currentId);
-                if(checkDuplicate >= 0) {
-                    let oldData = masterData[checkDuplicate];
-                    newEntry.rotations = oldData.rotations || 0;
-                    if (oldData.status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance') {
-                        newEntry.rotations += 1;
-                    }
-                    masterData[checkDuplicate] = newEntry;
-                } else {
-                    masterData.push(newEntry);
-                }
-            } else {
-                masterData.push(newEntry);
-            }
-        }
-
-        localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
-        cancelEdit();
-        renderTable();
-    });
-
-    function clearData() {
-        if(confirm("Hapus seluruh data logistik?")) {
-            masterData = [];
-            localStorage.removeItem('advancedLogisticData');
-            cancelEdit();
-            renderTable();
-        }
+    function exportToExcel() {
+        const worksheet = XLSX.utils.json_to_sheet(masterData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan");
+        XLSX.writeFile(workbook, `Laporan_Isotank_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
+    // Auto load
     renderTable();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
