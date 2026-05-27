@@ -7,19 +7,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f4f7f6; }
-        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; }
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: none; margin-bottom: 20px; }
         .status-badge, .type-badge, .track-badge { font-size: 0.85em; padding: 5px 10px; }
         .section-title { font-size: 0.9rem; font-weight: bold; color: #555; text-transform: uppercase; border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; }
         .dash-card { border-radius: 10px; color: white; padding: 15px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;}
         .dash-card h3 { margin: 0; font-size: 2rem; font-weight: bold; }
-        .dash-card p { margin: 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; opacity: 0.9;}
+        .dash-card p { margin: 0; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; opacity: 0.9;}
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark bg-primary mb-4">
     <div class="container-fluid px-4">
-        <a class="navbar-brand" href="#">🚛 Dashboard Logistik Terpadu (Isotank & Container)</a>
+        <a class="navbar-brand" href="#">🚛 Dashboard Logistik Terpadu & Analisis Rotasi Isotank</a>
     </div>
 </nav>
 
@@ -27,16 +27,16 @@
 
     <div class="row mb-4 g-2" id="dashboard-summary">
         <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-primary">
-            <p>Total di Site</p><h3 id="count-site">0</h3>
+            <p>Total Warehouse</p><h3 id="count-warehouse">0</h3>
         </div></div>
         <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-success">
-            <p>Full di Site</p><h3 id="count-full-site">0</h3>
+            <p>Full Warehouse</p><h3 id="count-full-warehouse">0</h3>
         </div></div>
         <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-secondary">
-            <p>Kosong di Site</p><h3 id="count-empty-site">0</h3>
+            <p>Kosong Warehouse</p><h3 id="count-empty-warehouse">0</h3>
         </div></div>
         <div class="col-6 col-md-3 col-xl-2"><div class="dash-card bg-info text-dark">
-            <p>Perjalanan Hub/Sub</p><h3 id="count-hubsub">0</h3>
+            <p>Posisi HUB (SUB/KOE)</p><h3 id="count-hub">0</h3>
         </div></div>
         <div class="col-6 col-md-4 col-xl-1"><div class="dash-card bg-dark">
             <p>Instal 25KT</p><h3 id="count-25kt">0</h3>
@@ -64,11 +64,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Nomor Unit / ID</label>
-                            <input type="text" id="unitId" class="form-control" placeholder="Contoh: TANK-88" required>
+                            <input type="text" id="unitId" class="form-control" placeholder="Contoh: SJIU2221705" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Isi Muatan & Qty</label>
-                            <input type="text" id="cargo" class="form-control" placeholder="Contoh: Methanol, CPO" required>
+                            <input type="text" id="cargo" class="form-control" placeholder="Contoh: Methanol" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Status Operasional</label>
@@ -87,16 +87,16 @@
                             <div class="mb-3">
                                 <label class="form-label">Tracking Posisi</label>
                                 <select id="trackingPos" class="form-select">
-                                    <option value="SITE">SITE (Lapangan Pabrik)</option>
-                                    <option value="HUB">HUB (Pusat)</option>
-                                    <option value="SUB">SUB (Cabang/Transit)</option>
-                                    <option value="25KT">25KT (Area Instalasi)</option>
-                                    <option value="VENDOR">VENDOR</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="HUB SUB">HUB SUB</option>
+                                    <option value="HUB KOE">HUB KOE</option>
+                                    <option value="25KT">25KT</option>
+                                    <option value="Vendor">Vendor</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Supplier</label>
-                                <input type="text" id="supplier" class="form-control" placeholder="Nama Supplier">
+                                <input type="text" id="supplier" class="form-control" placeholder="Nama Supplier" value="-">
                             </div>
                             <div class="row">
                                 <div class="col-6 mb-3">
@@ -132,6 +132,23 @@
                     </form>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-header bg-dark text-white fw-bold">🏢 Qty Unit per Supplier</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped m-0" style="font-size: 0.85rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Supplier</th>
+                                <th class="text-center">Total Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierTableBody">
+                            <tr><td colspan="2" class="text-center text-muted">Belum ada data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div class="col-xl-9 col-lg-8">
@@ -151,6 +168,7 @@
                                     <th>Status</th>
                                     <th>Posisi</th>
                                     <th>Supplier</th>
+                                    <th>Total Rotasi</th>
                                     <th>Tgl Keluar (Out)</th>
                                     <th>Tgl Masuk (In)</th>
                                 </tr>
@@ -177,39 +195,57 @@
         }
     });
 
-    // FUNGSI UNTUK MENGHITUNG ANGKA DI DASHBOARD ATAS
-    function updateDashboard() {
-        let site = 0, fullSite = 0, emptySite = 0, hubSub = 0, inst25kt = 0, inbound = 0, outbound = 0;
+    // FUNGSI UPDATE ANGKED DI DASHBOARD & TABEL SUPPLIER
+    function updateDashboardAndSuppliers() {
+        let warehouse = 0, fullWarehouse = 0, emptyWarehouse = 0, hub = 0, inst25kt = 0, inbound = 0, outbound = 0;
+        let supplierCounts = {};
 
         masterData.forEach(data => {
             if (data.type === 'Isotank') {
-                // Logic perhitungan sesuai permintaan
-                if (data.trackingPos === 'SITE') site++;
-                if (data.trackingPos === 'SITE' && data.status === 'Terisi (Full)') fullSite++;
-                if (data.trackingPos === 'SITE' && data.status === 'Standby (Kosong)') emptySite++;
-                if ((data.trackingPos === 'HUB' || data.trackingPos === 'SUB') && data.status.includes('Perjalanan')) hubSub++;
+                if (data.trackingPos === 'Warehouse') warehouse++;
+                if (data.trackingPos === 'Warehouse' && data.status === 'Terisi (Full)') fullWarehouse++;
+                if (data.trackingPos === 'Warehouse' && data.status === 'Standby (Kosong)') emptyWarehouse++;
+                if (data.trackingPos === 'HUB SUB' || data.trackingPos === 'HUB KOE') hub++;
                 if (data.trackingPos === '25KT' || data.status === 'Terinstal') inst25kt++;
                 if (data.status === 'Perjalanan (Akan Masuk)') inbound++;
                 if (data.status === 'Perjalanan (Sudah Keluar)') outbound++;
+
+                // Hitung Qty Per Supplier
+                let supName = data.supplier ? data.supplier.trim() : '-';
+                if(supName === '') supName = '-';
+                supplierCounts[supName] = (supplierCounts[supName] || 0) + 1;
             }
         });
 
-        document.getElementById('count-site').innerText = site;
-        document.getElementById('count-full-site').innerText = fullSite;
-        document.getElementById('count-empty-site').innerText = emptySite;
-        document.getElementById('count-hubsub').innerText = hubSub;
+        // Set Angka Dashboard atas
+        document.getElementById('count-warehouse').innerText = warehouse;
+        document.getElementById('count-full-warehouse').innerText = fullWarehouse;
+        document.getElementById('count-empty-warehouse').innerText = emptyWarehouse;
+        document.getElementById('count-hub').innerText = hub;
         document.getElementById('count-25kt').innerText = inst25kt;
         document.getElementById('count-inbound').innerText = inbound;
         document.getElementById('count-outbound').innerText = outbound;
+
+        // Render Tabel Supplier (Form Kiri Bawah)
+        const supTbody = document.getElementById('supplierTableBody');
+        supTbody.innerHTML = '';
+        let keys = Object.keys(supplierCounts);
+        if(keys.length === 0) {
+            supTbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">Belum ada data</td></tr>';
+        } else {
+            keys.forEach(sup => {
+                supTbody.innerHTML += `<tr><td><strong>${sup}</strong></td><td class="text-center fw-bold text-primary">${supplierCounts[sup]} Unit</td></tr>`;
+            });
+        }
     }
 
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        updateDashboard(); // Hitung ulang dashboard setiap tabel di-render
+        updateDashboardAndSuppliers(); 
 
         if(masterData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Belum ada armada terdata.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada armada terdata.</td></tr>';
             return;
         }
 
@@ -222,13 +258,14 @@
 
             let typeBadge = data.type === 'Isotank' ? 'bg-primary' : 'bg-dark';
             let trackingDisplay = '-', supplierDisplay = '-', date1 = '-', date2 = '-';
+            let rotationDisplay = data.rotations ? `<span class="badge bg-dark fw-bold">${data.rotations}x Trip</span>` : '<span class="text-muted">0x</span>';
 
             if (data.type === 'Isotank') {
                 let trackColor = 'bg-secondary';
-                if(data.trackingPos === 'HUB' || data.trackingPos === 'SUB') trackColor = 'bg-purple text-white';
-                if(data.trackingPos === 'SITE' || data.trackingPos === '25KT') trackColor = 'bg-success';
+                if(data.trackingPos === 'HUB SUB' || data.trackingPos === 'HUB KOE') trackColor = 'bg-purple text-white';
+                if(data.trackingPos === 'Warehouse' || data.trackingPos === '25KT') trackColor = 'bg-success';
                 
-                let bgStyle = (data.trackingPos === 'HUB' || data.trackingPos === 'SUB') ? 'style="background-color: #6f42c1;"' : '';
+                let bgStyle = (data.trackingPos === 'HUB SUB' || data.trackingPos === 'HUB KOE') ? 'style="background-color: #6f42c1;"' : '';
                 trackingDisplay = `<span class="badge ${trackColor} track-badge" ${bgStyle}>${data.trackingPos}</span>`;
                 supplierDisplay = data.supplier || '-';
                 date1 = data.dateOutbound || '-';
@@ -236,6 +273,7 @@
             } else {
                 trackingDisplay = `<i class="text-secondary">${data.location || 'Depot'}</i>`;
                 supplierDisplay = 'N/A';
+                rotationDisplay = '<span class="text-muted">N/A</span>';
                 date1 = data.dateIn || '-';
                 date2 = data.dateOut || '-';
             }
@@ -247,6 +285,7 @@
                 <td><span class="badge ${statusColor} status-badge">${data.status}</span></td>
                 <td>${trackingDisplay}</td>
                 <td>${supplierDisplay}</td>
+                <td>${rotationDisplay}</td>
                 <td>${date1}</td>
                 <td>${date2}</td>
             </tr>`;
@@ -257,15 +296,18 @@
     document.getElementById('formLogistik').addEventListener('submit', function(e) {
         e.preventDefault();
         const type = document.getElementById('unitType').value;
+        const inputId = document.getElementById('unitId').value.toUpperCase().trim();
+        const newStatus = document.getElementById('status').value;
+
         let newEntry = {
-            id: document.getElementById('unitId').value.toUpperCase().trim(),
+            id: inputId,
             type: type,
             cargo: document.getElementById('cargo').value,
-            status: document.getElementById('status').value
+            status: newStatus
         };
 
         if (type === 'Isotank') {
-            newEntry.supplier = document.getElementById('supplier').value;
+            newEntry.supplier = document.getElementById('supplier').value || '-';
             newEntry.trackingPos = document.getElementById('trackingPos').value;
             newEntry.dateOutbound = document.getElementById('dateOutbound').value;
             newEntry.dateInboundSite = document.getElementById('dateInboundSite').value;
@@ -275,9 +317,21 @@
             newEntry.dateOut = document.getElementById('dateOut').value;
         }
 
-        const existingIndex = masterData.findIndex(unit => unit.id === newEntry.id);
-        if (existingIndex >= 0) masterData[existingIndex] = newEntry; 
-        else masterData.push(newEntry); 
+        // --- SISTEM DETEKSI OTOMATIS HITUNG ROTASI (TRIP) ---
+        const existingIndex = masterData.findIndex(unit => unit.id === inputId);
+        if (existingIndex >= 0) {
+            let oldData = masterData[existingIndex];
+            newEntry.rotations = oldData.rotations || 0;
+            
+            // Logika Trip bertambah: Jika status lama adalah "Perjalanan" dan status baru diubah menjadi "Terisi (Full)", "Standby (Kosong)", atau "Terinstal" di Site/Warehouse.
+            if (oldData.status.includes('Perjalanan') && !newStatus.includes('Perjalanan') && newStatus !== 'Maintenance') {
+                newEntry.rotations += 1;
+            }
+            masterData[existingIndex] = newEntry; 
+        } else {
+            newEntry.rotations = 0; // Unit baru mulai dari 0 rotasi
+            masterData.push(newEntry); 
+        }
 
         localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
         renderTable();
