@@ -209,9 +209,18 @@
 
     <!-- PAGE: SHIPMENT TRACKING -->
     <div id="page-tracking" class="page-content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <p class="text-muted m-0 small">Monitoring seluruh armada yang sedang berjalan maupun standby.</p>
-            <button class="btn btn-sm btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <div>
+                <p class="text-muted m-0 small">Monitoring seluruh armada yang sedang berjalan maupun standby.</p>
+            </div>
+            <!-- Fitur Pencarian / Filter Berdasarkan ID Isotank -->
+            <div class="d-flex gap-2 align-items-center">
+                <div class="input-group" style="max-width: 280px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchIsotank" class="form-control border-start-0 ps-0" placeholder="Cari Nomor Isotank / Unit..." oninput="renderTable()">
+                </div>
+                <button class="btn btn-sm btn-success fw-bold" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
+            </div>
         </div>
         <div class="table-responsive shadow-sm rounded-3"><table class="table table-custom table-hover align-middle m-0"><thead><tr><th>No. Unit</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Location Tracking</th><th>Total Rotasi</th><th>Outbound Date</th><th>Inbound Date</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
     </div>
@@ -467,6 +476,9 @@
         let counts = { total: 0, transit: 0, overdue: 0, full: 0 };
         let vendorData = {};
 
+        // Mengambil filter pencarian secara real-time
+        const filterVal = document.getElementById('searchIsotank')?.value.toUpperCase().trim() || '';
+
         masterData.forEach(data => {
             counts.total++;
             if(data.status.includes('Perjalanan')) counts.transit++;
@@ -486,6 +498,11 @@
                 if(!vendorData[s]) vendorData[s] = { total: 0, transit: 0 };
                 vendorData[s].total++;
                 if(data.status.includes('Perjalanan')) vendorData[s].transit++;
+            }
+
+            // FILTER FILTER PENCARIAN: Melewati rendering baris jika tidak cocok dengan ID Unit
+            if (filterVal !== '' && !data.id.toUpperCase().includes(filterVal)) {
+                return; 
             }
 
             let rotationDisplay = data.type === 'Isotank' ? `<span class="badge bg-dark fw-bold">${data.rotations || 0}x Trip</span>` : '<span class="text-muted">N/A</span>';
