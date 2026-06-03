@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Isotank Management Enterprise Pro</title>
+    
+    <!-- CSS Library -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
@@ -44,6 +48,7 @@
             z-index: 1000;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
             overflow-y: auto;
+            transition: all 0.3s ease;
         }
 
         .sidebar-brand {
@@ -55,6 +60,8 @@
             text-decoration: none;
             display: block;
             letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
         }
 
         .sidebar .nav-item {
@@ -105,6 +112,7 @@
         .main-wrapper {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+            transition: all 0.3s ease;
         }
 
         .top-header {
@@ -197,7 +205,10 @@
     <!-- TOP HEADER -->
     <div class="top-header d-flex justify-content-between align-items-center">
         <h5 class="fw-bold m-0 text-navy" id="header-title">Executive Summary</h5>
-        <div class="text-muted small"><i class="fas fa-calendar-alt me-1"></i> <span id="currentDate"></span></div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="text-muted small"><i class="fas fa-calendar-alt me-1"></i> <span id="currentDate"></span></div>
+            <button class="btn btn-sm btn-outline-danger fw-bold" onclick="resetDatabase()"><i class="fas fa-trash-alt me-1"></i> Reset DB</button>
+        </div>
     </div>
 
     <!-- PAGE: EXECUTIVE SUMMARY -->
@@ -214,7 +225,7 @@
         </div>
     </div>
 
-    <!-- PAGE: VENDOR MONITORING (TELAH DIPERBARUI BERDASARKAN IMAGE_856443.PNG) -->
+    <!-- PAGE: VENDOR MONITORING -->
     <div id="page-vendor" class="page-content">
         <div class="row g-4 mb-4">
             <div class="col-lg-12">
@@ -232,7 +243,6 @@
                     <button class="btn btn-sm btn-primary fw-bold" onclick="openVendorConfigModal()"><i class="fas fa-cog me-1"></i> Atur Target Contract Vendor</button>
                 </div>
                 <div class="table-responsive shadow-sm rounded-3">
-                    <!-- Struktur Tabel Multi-Header Sesuai Gambar -->
                     <table class="table table-bordered table-custom align-middle text-center m-0" style="font-size: 0.8rem;">
                         <thead>
                             <tr class="table-dark">
@@ -390,7 +400,6 @@
                                     <label class="form-label small fw-bold">Isi Muatan</label>
                                     <input type="text" id="cargo" class="form-control" required placeholder="Contoh: Methanol">
                                 </div>
-                                <!-- TAMBAHAN KHUSUS: BERAT DALAM KG UNTUK KALKULASI TABEL RINGKASAN -->
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label small fw-bold text-success">Berat Muatan (kg)</label>
                                     <input type="number" id="weightKg" class="form-control border-success" placeholder="Contoh: 30000" min="0" value="0">
@@ -583,7 +592,7 @@
     </div>
 </div>
 
-<!-- --- MODAL CONFIGURATION VENDOR CONTRACT (FITUR BARU) --- -->
+<!-- --- MODAL CONFIGURATION VENDOR CONTRACT --- -->
 <div class="modal fade" id="vendorConfigModal" tabindex="-1" aria-labelledby="vendorConfigModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="border-radius:12px; overflow:hidden;">
@@ -623,9 +632,37 @@
 <script>
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+    // --- INITIAL DATASET (MOCK DATA RIIL UNTUK PROYEKSI) ---
+    // Dipopulasi secara otomatis jika localStorage kosong, sehingga dashboard tidak pernah kosong pada peluncuran pertama.
+    const initialDataset = [
+        { id: "SJIU2322090", poNumber: "99616", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "NTTU1753699", poNumber: "99617", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2322001", poNumber: "99618", cargo: "Methanol", weightKg: 35200, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2221541", poNumber: "99619", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2221710", poNumber: "99620", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2221536", poNumber: "99622", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2221705", poNumber: "99998", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [
+            { po: "90001", cargo: "Methanol", supplier: "DWIJAYA", outbound: "2026-01-10", inbound: "2026-04-05" }
+        ] },
+        { id: "NTTU1753750", poNumber: "99999", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2322043", poNumber: "100000", cargo: "Methanol", weightKg: 35150, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "NTTU1753765", poNumber: "100001", cargo: "Methanol", weightKg: 35250, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2322059", poNumber: "100002", cargo: "Methanol", weightKg: 34880, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2322064", poNumber: "100003", cargo: "Methanol", weightKg: 34970, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2001275", poNumber: "100004", cargo: "Methanol", weightKg: 35050, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        
+        // Unit yang Onsite di Lapangan
+        { id: "SJIU2221691", poNumber: "99615", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", history: [] },
+        { id: "NTTU1753690", poNumber: "99614", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", history: [] }
+    ];
+
+    if (!localStorage.getItem('advancedLogisticData')) {
+        localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
+    }
+
     let masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || [];
     
-    // Database target contract khusus vendor (Forecast & Qty PO)
+    // Database target contract khusus vendor
     let vendorConfigs = JSON.parse(localStorage.getItem('vendorConfigs')) || {
         "ROLIMEX": { forecast: 310000, qtyPo: 307090 },
         "DWIJAYA": { forecast: 300000, qtyPo: 300000 },
@@ -643,6 +680,21 @@
     let currentStockTakeUnitId = null;
     let vConfigModal = null;
 
+    // --- FUNGSI RESET DATABASE ---
+    // Membantu admin atau manajer mengosongkan/memulihkan data ke kondisi bawaan jika diperlukan
+    function resetDatabase() {
+        if(confirm("Apakah Anda yakin ingin mengatur ulang database ke kondisi simulasi awal? Semua input data manual Anda saat ini akan ditimpa.")) {
+            localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
+            masterData = JSON.parse(localStorage.getItem('advancedLogisticData'));
+            renderTable();
+            if(document.getElementById('page-stocktake').classList.contains('active')) {
+                renderStockTakeTable();
+            }
+            initCharts();
+        }
+    }
+
+    // --- MANAJEMEN PINDAH HALAMAN (TAB NAVIGATION) ---
     function showPage(pageId) {
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
@@ -666,82 +718,81 @@
     }
 
     function calculateAging(dateStr) {
-        if(!dateStr || dateStr.startsWith('0001')) return 0;
+        if(!dateStr || typeof dateStr !== 'string' || dateStr.startsWith('0001')) return 0;
         const diff = new Date() - new Date(dateStr);
         return Math.floor(diff / (1000 * 60 * 60 * 24));
     }
 
     function cleanDateDisplay(dateStr) {
-        if(!dateStr || dateStr === "" || dateStr.startsWith('0001')) {
+        if(!dateStr || typeof dateStr !== 'string' || dateStr === "" || dateStr.startsWith('0001')) {
             return '-';
         }
         return dateStr;
     }
 
-    // --- MANAJEMEN PENYEMPURNAAN TABEL VENDOR (IMAGE_856443.PNG) ---
+    // --- RENDERING TABEL SUMMARY VENDOR (EXCEL-STYLE SINKRON DENGAN DOKUMEN LAPORAN) ---
     function renderVendorSummary() {
         const tbody = document.getElementById('vendorSummaryTableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Tentukan daftar vendor statis utama yang ingin dilacak
         const vendorsToTrack = ["ROLIMEX", "DWIJAYA", "ENERGI JAYA INOVASI PT", "ADIMITRA"];
         
         vendorsToTrack.forEach(vendor => {
             const config = vendorConfigs[vendor] || { forecast: 0, qtyPo: 0 };
             
-            // Hitung aktual data Isotank berdasarkan Vendor
             let onsiteQty = 0;
             let onsiteKg = 0;
-            
             let inboundKoeQty = 0;
             let inboundKoeKg = 0;
-            
             let inboundHubQty = 0;
             let inboundHubKg = 0;
-            
             let outboundKoe = 0;
             let outboundHub = 0;
 
             masterData.forEach(item => {
-                if (item.type === 'Isotank' && item.supplier && item.supplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
+                const itemType = item.type || '';
+                const itemSupplier = item.supplier || '';
+                const itemTrackingPos = item.trackingPos || '';
+                const itemStatus = item.status || '';
+
+                if (itemType === 'Isotank' && itemSupplier && itemSupplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
                     let weight = parseFloat(item.weightKg) || 0;
                     
-                    // 1. Sudah Inbound / Onsite (Warehouse & 25KT)
-                    if (item.trackingPos === 'Warehouse' || item.trackingPos === '25KT') {
+                    // 1. Sudah Inbound / Onsite (Terparkir aman di Warehouse pabrik atau terinstal di 25KT)
+                    if (itemTrackingPos === 'Warehouse' || itemTrackingPos === '25KT') {
                         onsiteQty++;
                         onsiteKg += weight;
                     }
                     
-                    // 2. Inbound KOE (HUB KOE & Status Inbound/Terisi)
-                    if (item.trackingPos === 'HUB KOE' && item.status.includes('Inbound')) {
+                    // 2. Inbound KOE (Terdeteksi transit di HUB KOE dengan status Perjalanan)
+                    if (itemTrackingPos === 'HUB KOE' && itemStatus.includes('Inbound')) {
                         inboundKoeQty++;
                         inboundKoeKg += weight;
                     }
                     
-                    // 3. Inbound HUB (HUB SUB & Status Inbound/Terisi)
-                    if (item.trackingPos === 'HUB SUB' && item.status.includes('Inbound')) {
+                    // 3. Inbound HUB (Terdeteksi transit di HUB SUB / HUB HUB dengan status Perjalanan)
+                    if ((itemTrackingPos === 'HUB SUB' || itemTrackingPos === 'HUB') && itemStatus.includes('Inbound')) {
                         inboundHubQty++;
                         inboundHubKg += weight;
                     }
                     
-                    // 4. Outbound KOE
-                    if (item.trackingPos === 'HUB KOE' && item.status.includes('Outbound')) {
+                    // 4. Outbound KOE (Keluar lewat KOE)
+                    if (itemTrackingPos === 'HUB KOE' && itemStatus.includes('Outbound')) {
                         outboundKoe++;
                     }
                     
-                    // 5. Outbound HUB
-                    if (item.trackingPos === 'HUB SUB' && item.status.includes('Outbound')) {
+                    // 5. Outbound HUB (Keluar lewat HUB)
+                    if ((itemTrackingPos === 'HUB SUB' || itemTrackingPos === 'HUB') && itemStatus.includes('Outbound')) {
                         outboundHub++;
                     }
                 }
             });
 
-            // Hitung Selisih: Formula = Qty PO - (Onsite Kg + Inbound KOE Kg + Inbound HUB Kg)
+            // Perhitungan formula real-time deviasi selisih kilogram
             let totalDiterima = onsiteKg + inboundKoeKg + inboundHubKg;
             let selisihKg = config.qtyPo - totalDiterima;
 
-            // Formatter angka rupiah / ribuan Indonesia
             const formatNum = (num) => num === 0 ? '-' : num.toLocaleString('id-ID');
             const formatSelisih = (num) => {
                 if (num === 0) return '-';
@@ -754,24 +805,14 @@
                     <td class="text-start fw-bold">${vendor}</td>
                     <td class="fw-bold">${formatNum(config.forecast)}</td>
                     <td class="fw-bold">${formatNum(config.qtyPo)}</td>
-                    
-                    <!-- Sudah Inbound Onsite -->
                     <td class="col-onsite">${onsiteQty === 0 ? '-' : onsiteQty}</td>
                     <td class="col-onsite fw-bold">${formatNum(onsiteKg)}</td>
-                    
-                    <!-- Inbound KOE -->
                     <td class="col-koe">${inboundKoeQty === 0 ? '-' : inboundKoeQty}</td>
                     <td class="col-koe fw-bold">${formatNum(inboundKoeKg)}</td>
-                    
-                    <!-- Inbound HUB -->
                     <td class="col-hub" style="background-color: #dbeafe !important;">${inboundHubQty === 0 ? '-' : inboundHubQty}</td>
                     <td class="col-hub fw-bold" style="background-color: #dbeafe !important;">${formatNum(inboundHubKg)}</td>
-                    
-                    <!-- Outbound -->
                     <td class="col-outbound">${outboundKoe === 0 ? '0' : outboundKoe}</td>
                     <td class="col-outbound">${outboundHub === 0 ? '0' : outboundHub}</td>
-                    
-                    <!-- Selisih -->
                     <td class="col-selisih text-dark">${formatSelisih(selisihKg)}</td>
                 </tr>
             `;
@@ -799,18 +840,27 @@
         renderVendorSummary();
     }
 
+    // --- RENDERING TABEL UTAMA (SHIPMENT TRACKING) - DENGAN CRASH GUARD ---
     function renderTable() {
         const trackingTable = document.getElementById('trackingTable');
         const agingTable = document.getElementById('agingTable');
         const vendorTable = document.getElementById('vendorTable');
         const alertList = document.getElementById('alert-list');
         
-        if(!trackingTable) return;
+        // --- SAFE GUARD UNTUK ELEMEN DOM YANG MUNGKIN NULL ---
+        // Jika halaman belum sepenuhnya termuat, atau ID tertentu diganti oleh fitur baru,
+        // pengaman ini mencegah munculnya "TypeError: Cannot set properties of null"
+        if (trackingTable) trackingTable.innerHTML = '';
+        if (agingTable) agingTable.innerHTML = '';
+        if (vendorTable) vendorTable.innerHTML = '';
+        if (alertList) alertList.innerHTML = '';
 
-        trackingTable.innerHTML = '';
-        agingTable.innerHTML = '';
-        vendorTable.innerHTML = '';
-        alertList.innerHTML = '';
+        if (!trackingTable) return;
+
+        if (masterData.length === 0) {
+            trackingTable.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada armada terdata.</td></tr>';
+            return;
+        }
 
         let counts = { total: 0, transit: 0, overdue: 0, full: 0 };
         let vendorData = {};
@@ -819,80 +869,105 @@
 
         masterData.forEach(data => {
             counts.total++;
-            if(data.status.includes('Perjalanan')) counts.transit++;
-            if(data.status.includes('Full')) counts.full++;
+            
+            // Crash Guard: Mengamankan properti string yang berpotensi undefined/null di memori lokal
+            const statusStr = data.status || '';
+            const typeStr = data.type || '';
+            const trackingPosStr = data.trackingPos || '';
+            const supplierStr = data.supplier || '';
+            const idStr = data.id || '';
+            const poNumberStr = data.poNumber || '';
+            const cargoStr = data.cargo || '';
+
+            if(statusStr.includes('Perjalanan')) counts.transit++;
+            if(statusStr.includes('Full') || statusStr.includes('Terinstal')) counts.full++;
 
             let age = 0;
-            if(data.status.includes('Perjalanan')) {
+            if(statusStr.includes('Perjalanan')) {
                 age = calculateAging(data.dateOutbound);
                 if(age > 8) {
                     counts.overdue++;
-                    alertList.innerHTML += `<div class="mb-2 border-bottom pb-2"><span class="badge bg-danger me-1">DELAY</span> <b>${data.id}</b> terjebak ${age} hari di rute pengiriman.</div>`;
+                    if (alertList) {
+                        alertList.innerHTML += `<div class="mb-2 border-bottom pb-2"><span class="badge bg-danger me-1">DELAY</span> <b>${idStr || 'N/A'}</b> terjebak ${age} hari di rute pengiriman.</div>`;
+                    }
                 }
             }
 
-            if(data.type === 'Isotank') {
-                let s = data.supplier || 'No Vendor';
+            if(typeStr === 'Isotank') {
+                let s = supplierStr || 'No Vendor';
                 if(!vendorData[s]) vendorData[s] = { total: 0, transit: 0 };
                 vendorData[s].total++;
-                if(data.status.includes('Perjalanan')) vendorData[s].transit++;
+                if(statusStr.includes('Perjalanan')) vendorData[s].transit++;
             }
 
-            if (filterVal !== '' && !data.id.toUpperCase().includes(filterVal)) {
+            // Filter Pencarian Real-Time
+            if (filterVal !== '' && !idStr.toUpperCase().includes(filterVal)) {
                 return; 
             }
 
-            let rotationDisplay = data.type === 'Isotank' ? `<span class="badge bg-dark fw-bold">${data.rotations || 0}x Trip</span>` : '<span class="text-muted">N/A</span>';
+            let rotationDisplay = typeStr === 'Isotank' ? `<span class="badge bg-dark fw-bold">${data.rotations || 0}x Trip</span>` : '<span class="text-muted">N/A</span>';
             
             let statusBadgeColor = 'bg-secondary';
-            if (data.status.includes('Full')) statusBadgeColor = 'bg-success';
-            else if (data.status.includes('Perjalanan')) statusBadgeColor = 'bg-warning text-dark';
-            else if (data.status === 'Tidak Aktif / Stop Refill') statusBadgeColor = 'bg-light text-muted border';
-            else if (data.status === 'Maintenance') statusBadgeColor = 'bg-danger';
+            if (statusStr.includes('Full')) statusBadgeColor = 'bg-success';
+            else if (statusStr.includes('Perjalanan')) statusBadgeColor = 'bg-warning text-dark';
+            else if (statusStr === 'Tidak Aktif / Stop Refill') statusBadgeColor = 'bg-light text-muted border';
+            else if (statusStr === 'Maintenance') statusBadgeColor = 'bg-danger';
 
             let outDate = cleanDateDisplay(data.dateOutbound);
             let inDate = cleanDateDisplay(data.dateInboundSite);
 
             trackingTable.innerHTML += `<tr>
-                <td><b>${data.id}</b></td>
-                <td class="text-danger fw-bold">${data.poNumber || '-'}</td>
-                <td>${data.cargo} <small class="text-success">(${data.weightKg ? parseFloat(data.weightKg).toLocaleString('id-ID') : 0} kg)</small></td>
-                <td><span class="badge ${statusBadgeColor}">${data.status}</span></td>
-                <td><span class="badge bg-primary bg-opacity-10 text-primary px-3 border border-primary border-opacity-25">${data.trackingPos}</span></td>
+                <td><b>${idStr || '-'}</b></td>
+                <td class="text-danger fw-bold">${poNumberStr || '-'}</td>
+                <td>${cargoStr || '-'} <small class="text-success">(${data.weightKg ? parseFloat(data.weightKg).toLocaleString('id-ID') : 0} kg)</small></td>
+                <td><span class="badge ${statusBadgeColor}">${statusStr || 'Standby'}</span></td>
+                <td><span class="badge bg-primary bg-opacity-10 text-primary px-3 border border-primary border-opacity-25">${trackingPosStr || 'Warehouse'}</span></td>
                 <td>${rotationDisplay}</td>
                 <td>${outDate}</td>
                 <td>${inDate}</td>
                 <td>
                     <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-secondary py-0 fw-bold" onclick="editRow('${data.id}')" title="Edit Data"><i class="fas fa-pen"></i></button>
-                        <button class="btn btn-sm btn-outline-primary py-0 fw-bold" onclick="openHistoryModal('${data.id}')" title="Riwayat Siklus"><i class="fas fa-history"></i> Riwayat</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 fw-bold" onclick="editRow('${idStr}')" title="Edit Data"><i class="fas fa-pen"></i></button>
+                        <button class="btn btn-sm btn-outline-primary py-0 fw-bold" onclick="openHistoryModal('${idStr}')" title="Riwayat Siklus"><i class="fas fa-history"></i> Riwayat</button>
                     </div>
                 </td>
             </tr>`;
 
-            if(age > 0) {
+            if(age > 0 && agingTable) {
                 let color = age > 8 ? 'text-danger fw-bold' : (age > 5 ? 'text-warning text-dark fw-bold' : 'text-success fw-bold');
                 let bgCircle = age > 8 ? 'bg-danger' : (age > 5 ? 'bg-warning' : 'bg-success');
-                agingTable.innerHTML += `<tr><td><b>${data.id}</b></td><td>${data.supplier}</td><td class="${color}">${age} Hari</td><td><i class="fas fa-circle ${bgCircle}"></i></td></tr>`;
+                agingTable.innerHTML += `<tr><td><b>${idStr}</b></td><td>${supplierStr}</td><td class="${color}">${age} Hari</td><td><i class="fas fa-circle ${bgCircle}"></i></td></tr>`;
             }
         });
 
-        Object.keys(vendorData).forEach(v => {
-            let perf = vendorData[v].transit > 2 ? '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Delay Risk</span>' : '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Healthy</span>';
-            vendorTable.innerHTML += `<tr><td><b>${v}</b></td><td>${vendorData[v].total} Unit</td><td>${vendorData[v].transit} Unit</td><td>${perf}</td></tr>`;
-        });
+        // Safe check sebelum mengubah vendorTable
+        if (vendorTable) {
+            Object.keys(vendorData).forEach(v => {
+                let perf = vendorData[v].transit > 2 ? '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Delay Risk</span>' : '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Healthy</span>';
+                vendorTable.innerHTML += `<tr><td><b>${v}</b></td><td>${vendorData[v].total} Unit</td><td>${vendorData[v].transit} Unit</td><td>${perf}</td></tr>`;
+            });
+        }
 
-        document.getElementById('kpi-total').innerText = counts.total;
-        document.getElementById('kpi-transit').innerText = counts.transit;
-        document.getElementById('kpi-overdue').innerText = counts.overdue;
-        document.getElementById('kpi-util').innerText = counts.total > 0 ? Math.round((counts.full / counts.total) * 100) + '%' : '0%';
-        if(alertList.innerHTML === '') alertList.innerHTML = '<div class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> Operational Aman (Tidak ada unit overdue)</div>';
+        // Amankan manipulasi KPI DOM
+        const kpiTotalEl = document.getElementById('kpi-total');
+        const kpiTransitEl = document.getElementById('kpi-transit');
+        const kpiOverdueEl = document.getElementById('kpi-overdue');
+        const kpiUtilEl = document.getElementById('kpi-util');
+
+        if (kpiTotalEl) kpiTotalEl.innerText = counts.total;
+        if (kpiTransitEl) kpiTransitEl.innerText = counts.transit;
+        if (kpiOverdueEl) kpiOverdueEl.innerText = counts.overdue;
+        if (kpiUtilEl) kpiUtilEl.innerText = counts.total > 0 ? Math.round((counts.full / counts.total) * 100) + '%' : '0%';
         
-        // Panggil render summary vendor
+        if (alertList && alertList.innerHTML === '') {
+            alertList.innerHTML = '<div class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> Operational Aman (Tidak ada unit overdue)</div>';
+        }
+        
+        // Render summary vendor secara sinkron
         renderVendorSummary();
     }
 
-    // --- MANAJEMEN RENDERING TABEL PENCATATAN FISIK (STOCK TAKE) ---
+    // --- RENDERING TABEL PENCATATAN FISIK (STOCK TAKE) - DENGAN CRASH GUARD ---
     function renderStockTakeTable() {
         const tbody = document.getElementById('stockTakeTableBody');
         if(!tbody) return;
@@ -901,11 +976,24 @@
         const searchVal = document.getElementById('searchStockTake')?.value.toUpperCase().trim() || '';
         const filterPos = document.getElementById('filterStockTakePos')?.value || 'ALL';
 
-        const siteUnits = masterData.filter(data => data.trackingPos === 'Warehouse' || data.trackingPos === '25KT');
+        const siteUnits = masterData.filter(data => {
+            const pos = data.trackingPos || '';
+            return pos === 'Warehouse' || pos === '25KT';
+        });
+
+        if (siteUnits.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Tidak ada unit di area site (Warehouse / 25KT).</td></tr>';
+            return;
+        }
 
         let counts = { total: 0, done: 0, todo: 0 };
 
         siteUnits.forEach(data => {
+            const trackingPosStr = data.trackingPos || '';
+            const statusStr = data.status || '';
+            const stStatusStr = data.stockTakeStatus || '';
+            const idStr = data.id || '';
+
             let stDoneThisWeek = false;
             if (data.lastStockTakeDate) {
                 const diffTime = Math.abs(new Date() - new Date(data.lastStockTakeDate));
@@ -915,7 +1003,7 @@
                 }
             }
 
-            if (filterPos !== 'ALL' && data.trackingPos !== filterPos) {
+            if (filterPos !== 'ALL' && trackingPosStr !== filterPos) {
                 return;
             }
 
@@ -923,25 +1011,25 @@
             if (stDoneThisWeek) counts.done++;
             else counts.todo++;
 
-            if (searchVal !== '' && !data.id.toUpperCase().includes(searchVal)) {
+            if (searchVal !== '' && !idStr.toUpperCase().includes(searchVal)) {
                 return;
             }
 
             let statusBadgeColor = 'bg-secondary';
-            if (data.status.includes('Full')) statusBadgeColor = 'bg-success';
-            else if (data.status.includes('Kosong')) statusBadgeColor = 'bg-warning text-dark';
-            else if (data.status.includes('Terinstal')) statusBadgeColor = 'bg-info text-dark';
+            if (statusStr.includes('Full')) statusBadgeColor = 'bg-success';
+            else if (statusStr.includes('Kosong')) statusBadgeColor = 'bg-warning text-dark';
+            else if (statusStr.includes('Terinstal')) statusBadgeColor = 'bg-info text-dark';
 
             let stStatusBadge = '<span class="badge bg-secondary">Belum Diperiksa</span>';
-            if (data.stockTakeStatus) {
-                if (data.stockTakeStatus.includes('Sesuai')) {
+            if (stStatusStr) {
+                if (stStatusStr.includes('Sesuai')) {
                     stStatusBadge = '<span class="badge bg-success">🟢 Sesuai (Match)</span>';
-                } else if (data.stockTakeStatus.includes('Selisih')) {
+                } else if (stStatusStr.includes('Selisih')) {
                     stStatusBadge = '<span class="badge bg-warning text-dark">🟡 Selisih</span>';
-                } else if (data.stockTakeStatus.includes('Rusak')) {
+                } else if (stStatusStr.includes('Rusak')) {
                     stStatusBadge = '<span class="badge bg-danger">🔴 Rusak</span>';
                 } else {
-                    stStatusBadge = `<span class="badge bg-secondary">${data.stockTakeStatus}</span>`;
+                    stStatusBadge = `<span class="badge bg-secondary">${stStatusStr}</span>`;
                 }
             }
 
@@ -949,14 +1037,14 @@
             let stNotes = data.stockTakeNotes || '-';
 
             tbody.innerHTML += `<tr>
-                <td><b>${data.id}</b></td>
-                <td><span class="badge bg-dark px-3">${data.trackingPos}</span></td>
-                <td><span class="badge ${statusBadgeColor}">${data.status}</span></td>
+                <td><b>${idStr || '-'}</b></td>
+                <td><span class="badge bg-dark px-3">${trackingPosStr}</span></td>
+                <td><span class="badge ${statusBadgeColor}">${statusStr || 'Standby'}</span></td>
                 <td>${lastStDate}</td>
                 <td>${stStatusBadge}</td>
                 <td><small>${stNotes}</small></td>
                 <td class="text-center">
-                    <button class="btn btn-sm btn-success fw-bold py-1 px-3" onclick="openQuickStockTakeModal('${data.id}')">
+                    <button class="btn btn-sm btn-success fw-bold py-1 px-3" onclick="openQuickStockTakeModal('${idStr}')">
                         <i class="fas fa-check-double"></i> Verifikasi
                     </button>
                 </td>
@@ -978,7 +1066,7 @@
 
         const item = masterData.find(u => u.id === id);
         if (item) {
-            if (item.lastStockTakeDate && !item.lastStockTakeDate.startsWith('0001')) {
+            if (item.lastStockTakeDate && typeof item.lastStockTakeDate === 'string' && !item.lastStockTakeDate.startsWith('0001')) {
                 document.getElementById('stQuickDate').value = item.lastStockTakeDate;
             }
             document.getElementById('stQuickStatus').value = item.stockTakeStatus || 'Sesuai (Match)';
@@ -1036,9 +1124,10 @@
         let statusLabels = ['Ready (Full)', 'Empty', 'In Transit', 'Maintenance / Stop'];
         let statusCount = [0, 0, 0, 0];
         masterData.forEach(d => {
-            if(d.status.includes('Full') || d.status.includes('Terinstal')) statusCount[0]++;
-            else if(d.status.includes('Kosong')) statusCount[1]++;
-            else if(d.status.includes('Perjalanan')) statusCount[2]++;
+            const statusStr = d.status || '';
+            if(statusStr.includes('Full') || statusStr.includes('Terinstal')) statusCount[0]++;
+            else if(statusStr.includes('Kosong') || statusStr.includes('Standby')) statusCount[1]++;
+            else if(statusStr.includes('Perjalanan')) statusCount[2]++;
             else statusCount[3]++;
         });
 
@@ -1083,6 +1172,7 @@
         renderTable();
     }
 
+    // Mengontrol visibilitas form input riwayat log manual di dalam modal
     function toggleAddHistoryForm(show) {
         const form = document.getElementById('addHistoryForm');
         if(show) {
@@ -1170,6 +1260,7 @@
         }
     }
 
+    // Melakukan verifikasi perubahan status secara real-time dan memberikan saran +1 rotasi jika unit sampai di site
     function handleStatusChange() {
         const newStatus = document.getElementById('status').value;
         const rotationsInput = document.getElementById('rotations');
@@ -1213,7 +1304,7 @@
             id: currentId,
             type: document.getElementById('unitType').value,
             cargo: document.getElementById('cargo').value,
-            weightKg: weightValue, // Properti Berat Muatan Baru
+            weightKg: weightValue, 
             poNumber: document.getElementById('poNumber').value.toUpperCase(),
             status: newStatus,
             trackingPos: document.getElementById('trackingPos').value,
@@ -1284,7 +1375,7 @@
 
         document.getElementById('unitType').value = item.type;
         document.getElementById('cargo').value = item.cargo;
-        document.getElementById('weightKg').value = item.weightKg || 0; // Set form berat muatan
+        document.getElementById('weightKg').value = item.weightKg || 0; 
         document.getElementById('poNumber').value = item.poNumber || '';
         document.getElementById('status').value = item.status;
         document.getElementById('trackingPos').value = item.trackingPos;
@@ -1293,8 +1384,8 @@
         document.getElementById('rotations').value = item.rotations || 0;
         document.getElementById('rotationNotice').style.display = 'none';
 
-        document.getElementById('dateOutbound').value = (item.dateOutbound && !item.dateOutbound.startsWith('0001')) ? item.dateOutbound : '';
-        document.getElementById('dateInboundSite').value = (item.dateInboundSite && !item.dateInboundSite.startsWith('0001')) ? item.dateInboundSite : '';
+        document.getElementById('dateOutbound').value = (item.dateOutbound && typeof item.dateOutbound === 'string' && !item.dateOutbound.startsWith('0001')) ? item.dateOutbound : '';
+        document.getElementById('dateInboundSite').value = (item.dateInboundSite && typeof item.dateInboundSite === 'string' && !item.dateInboundSite.startsWith('0001')) ? item.dateInboundSite : '';
     }
 
     function cancelEdit() {
@@ -1310,6 +1401,7 @@
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit me-2"></i> Form Update Data Lapangan';
     }
 
+    // Menyalakan fitur input manual pergantian ID
     function enableIdChange() { 
         document.getElementById('unitId').readOnly = false; 
         document.getElementById('unitId').focus();
@@ -1320,13 +1412,13 @@
         masterData.forEach((item, idx) => {
             formattedExportData.push({
                 "No": idx + 1,
-                "No. Unit / ID": item.id,
+                "No. Unit / ID": item.id || '-',
                 "No. PO Aktif": item.poNumber || '-',
-                "Tipe Unit": item.type,
-                "Isi Muatan": item.cargo,
+                "Tipe Unit": item.type || '-',
+                "Isi Muatan": item.cargo || '-',
                 "Berat Muatan (kg)": item.weightKg || 0,
-                "Status": item.status,
-                "Posisi": item.trackingPos,
+                "Status": item.status || '-',
+                "Posisi": item.trackingPos || '-',
                 "Supplier": item.supplier || '-',
                 "Total Rotasi (Trip)": `${item.rotations || 0}x`,
                 "Tgl Outbound": cleanDateDisplay(item.dateOutbound),
@@ -1341,7 +1433,7 @@
                 item.history.forEach((hist, hIdx) => {
                     formattedExportData.push({
                         "No": "",
-                        "No. Unit / ID": `-> Histori ${item.id}`,
+                        "No. Unit / ID": `-> Histori ${item.id || ''}`,
                         "No. PO Aktif": hist.po || '-',
                         "Tipe Unit": "",
                         "Isi Muatan": hist.cargo || '-',
@@ -1350,8 +1442,8 @@
                         "Posisi": "ARCHIVED",
                         "Supplier": hist.supplier || '-',
                         "Total Rotasi (Trip)": `Siklus ke-${hIdx + 1}`,
-                        "Tgl Outbound": hist.outbound,
-                        "Tgl Inbound": hist.inbound,
+                        "Tgl Outbound": hist.outbound || '-',
+                        "Tgl Inbound": hist.inbound || '-',
                         "Tgl Stock Take Terakhir": "-",
                         "Status Pemeriksaan Fisik": "-",
                         "Catatan Stock Take": "-",
