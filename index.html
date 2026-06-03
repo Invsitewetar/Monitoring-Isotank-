@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Isotank Management Enterprise Pro</title>
     
-    <!-- CSS Library -->
+    <!-- CSS Library Terpercaya -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- JS Library -->
+    <!-- JS Library Terpercaya untuk Grafik & Export Excel -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
@@ -36,7 +36,7 @@
             overflow-x: hidden; 
         }
 
-        /* --- SIDEBAR STYLE --- */
+        /* --- SIBEBAR NAVIGATION STYLES --- */
         .sidebar {
             width: var(--sidebar-width);
             position: fixed;
@@ -56,7 +56,7 @@
             font-size: 1.1rem;
             font-weight: 800;
             text-align: center;
-            padding: 0 1rem 2rem 1rem;
+            padding: 0 1rem 2.0rem 1rem;
             text-decoration: none;
             display: block;
             letter-spacing: 1px;
@@ -108,7 +108,7 @@
             border: 1px solid var(--info) !important;
         }
 
-        /* --- MAIN CONTENT STYLE --- */
+        /* --- MAIN WRAPPER LAYOUT --- */
         .main-wrapper {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
@@ -122,22 +122,32 @@
             margin-bottom: 25px;
         }
 
-        /* KPI Cards */
-        .kpi-card { border-radius: 12px; border: none; padding: 20px; transition: transform 0.2s; background: white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
-        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        /* KPI Card Styles */
+        .kpi-card { 
+            border-radius: 12px; 
+            border: none; 
+            padding: 20px; 
+            transition: transform 0.2s; 
+            background: white; 
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); 
+        }
+        .kpi-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); 
+        }
         .kpi-value { font-size: 2.2rem; font-weight: 700; margin-bottom: 0; }
         .kpi-label { color: var(--gray); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; }
         
-        /* Layout */
+        /* General Layout Elements */
         .page-content { display: none; padding: 0 30px 30px 30px; }
         .page-content.active { display: block; animation: fadeIn 0.4s ease; }
         .chart-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05); height: 100%; }
 
-        /* Tables */
+        /* Tables Custom Styles */
         .table-custom { background: white; border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
         .table-custom thead { background-color: #f1f5f9; border-bottom: 2px solid #e2e8f0; color: #334155; }
         
-        /* Alert Section */
+        /* Alert Section styles */
         .alert-urgent { border-left: 5px solid var(--critical); background: #fef2f2; }
 
         /* Color Coding Excel-Style */
@@ -191,6 +201,11 @@
                 <i class="fas fa-chart-line"></i> Utilization Report
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" onclick="showPage('page-activity')">
+                <i class="fas fa-history"></i> Log Aktivitas
+            </a>
+        </li>
         <li class="nav-item mt-3 border-top border-secondary pt-3">
             <a class="nav-link btn-update-data" onclick="showPage('page-input')">
                 <i class="fas fa-edit"></i> Update Data Unit
@@ -207,6 +222,10 @@
         <h5 class="fw-bold m-0 text-navy" id="header-title">Executive Summary</h5>
         <div class="d-flex align-items-center gap-3">
             <div class="text-muted small"><i class="fas fa-calendar-alt me-1"></i> <span id="currentDate"></span></div>
+            <!-- Backup & Restore Buttons -->
+            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="backupDatabase()"><i class="fas fa-download me-1"></i> Backup JSON</button>
+            <button class="btn btn-sm btn-outline-success fw-bold" onclick="triggerRestoreInput()"><i class="fas fa-upload me-1"></i> Restore JSON</button>
+            <input type="file" id="restoreFile" style="display: none;" onchange="restoreDatabase(event)">
             <button class="btn btn-sm btn-outline-danger fw-bold" onclick="resetDatabase()"><i class="fas fa-trash-alt me-1"></i> Reset DB</button>
         </div>
     </div>
@@ -277,16 +296,57 @@
 
     <!-- PAGE: SHIPMENT TRACKING -->
     <div id="page-tracking" class="page-content">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-            <div>
-                <p class="text-muted m-0 small">Monitoring seluruh armada yang sedang berjalan maupun standby.</p>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-                <div class="input-group" style="max-width: 280px;">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="searchIsotank" class="form-control border-start-0 ps-0" placeholder="Cari Nomor Isotank / Unit..." oninput="renderTable()">
+        <div class="d-flex flex-column mb-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-2">
+                <div>
+                    <p class="text-muted m-0 small">Monitoring seluruh armada yang sedang berjalan maupun standby.</p>
                 </div>
-                <button class="btn btn-sm btn-success fw-bold" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-sm btn-success fw-bold" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
+                </div>
+            </div>
+            
+            <!-- Pencarian & Filter Multi-Kombinasi Lanjutan -->
+            <div class="row g-2 bg-white p-3 rounded shadow-sm border">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Pencarian Nomor Unit</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white text-muted"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchIsotank" class="form-control" placeholder="Contoh: DJEU0303868" oninput="renderTable()">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Filter Vendor / Supplier</label>
+                    <select id="filterTrackingVendor" class="form-select form-select-sm" onchange="renderTable()">
+                        <option value="ALL">Semua Vendor</option>
+                        <option value="ROLIMEX">ROLIMEX</option>
+                        <option value="DWIJAYA">DWIJAYA</option>
+                        <option value="ENERGI JAYA INOVASI PT">PT. Energi Jaya Inovasi</option>
+                        <option value="ADIMITRA">ADIMITRA</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Filter Status Operasional</label>
+                    <select id="filterTrackingStatus" class="form-select form-select-sm" onchange="renderTable()">
+                        <option value="ALL">Semua Status</option>
+                        <option value="Full">Terisi (Full)</option>
+                        <option value="Kosong">Standby (Kosong)</option>
+                        <option value="Perjalanan">Dalam Perjalanan</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Stop">Stop Refill</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Filter Posisi Tracking</label>
+                    <select id="filterTrackingLocation" class="form-select form-select-sm" onchange="renderTable()">
+                        <option value="ALL">Semua Posisi</option>
+                        <option value="Warehouse">Warehouse</option>
+                        <option value="HUB SUB">HUB SUB</option>
+                        <option value="HUB KOE">HUB KOE</option>
+                        <option value="25KT">25KT</option>
+                        <option value="Vendor">Vendor</option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="table-responsive shadow-sm rounded-3"><table class="table table-custom table-hover align-middle m-0"><thead><tr><th>No. Unit</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Location Tracking</th><th>Total Rotasi</th><th>Outbound Date</th><th>Inbound Date</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
@@ -362,6 +422,31 @@
         <div class="row g-4">
             <div class="col-md-6"><div class="chart-container"><h6 class="fw-bold mb-3">Inventory Utilization (Full vs Empty)</h6><canvas id="utilChart"></canvas></div></div>
             <div class="col-md-6"><div class="chart-container"><h6 class="fw-bold mb-3">Unit Type Distribution</h6><canvas id="typeChart"></canvas></div></div>
+        </div>
+    </div>
+
+    <!-- PAGE: LOG AKTIVITAS (HALAMAN AUDIT LOGGER) -->
+    <div id="page-activity" class="page-content">
+        <div class="card kpi-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-navy m-0"><i class="fas fa-history me-2"></i>Sistem Audit Logger Logistik (Real-Time)</h6>
+                <button class="btn btn-sm btn-outline-danger fw-bold" onclick="clearActivityLogs()"><i class="fas fa-eraser me-1"></i> Bersihkan Log</button>
+            </div>
+            <div class="table-responsive shadow-sm rounded-3">
+                <table class="table table-striped table-hover align-middle m-0" style="font-size:0.85rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 15%;">Waktu Kejadian</th>
+                            <th style="width: 15%;">Nomor Unit</th>
+                            <th style="width: 15%;">Tipe Aksi</th>
+                            <th>Keterangan Deskripsi Aktivitas Lapangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityLogTableBody">
+                        <!-- Data log dimuat lewat JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -634,6 +719,7 @@
 
     // --- INITIAL DATASET (MOCK DATA RIIL UNTUK PROYEKSI) ---
     // Dipopulasi secara otomatis jika localStorage kosong, sehingga dashboard tidak pernah kosong pada peluncuran pertama.
+    // Menambahkan unit real-life "DJEU0303868" milik DWIJAYA agar pencarian Anda di screenshot tidak kosong!
     const initialDataset = [
         { id: "SJIU2322090", poNumber: "99616", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
         { id: "NTTU1753699", poNumber: "99617", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
@@ -641,6 +727,10 @@
         { id: "SJIU2221541", poNumber: "99619", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
         { id: "SJIU2221710", poNumber: "99620", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
         { id: "SJIU2221536", poNumber: "99622", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        
+        // Menambahkan Unit yang Anda cari di Screenshot
+        { id: "DJEU0303868", poNumber: "99997", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        
         { id: "SJIU2221705", poNumber: "99998", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [
             { po: "90001", cargo: "Methanol", supplier: "DWIJAYA", outbound: "2026-01-10", inbound: "2026-04-05" }
         ] },
@@ -654,6 +744,11 @@
         // Unit yang Onsite di Lapangan
         { id: "SJIU2221691", poNumber: "99615", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", history: [] },
         { id: "NTTU1753690", poNumber: "99614", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", history: [] }
+    ];
+
+    // Mengambil log aktivitas audit lapangan dari memori lokal
+    let activityLogs = JSON.parse(localStorage.getItem('activityLogs')) || [
+        { timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "INITIALIZE", desc: "Database sistem diinisialisasi pertama kali dengan data simulasi bawaan." }
     ];
 
     if (!localStorage.getItem('advancedLogisticData')) {
@@ -680,16 +775,117 @@
     let currentStockTakeUnitId = null;
     let vConfigModal = null;
 
+    // --- FUNSI AUDIT LOGGER LAPANGAN ---
+    function logActivity(unitId, actionType, desc) {
+        const timeNow = new Date().toLocaleDateString('id-ID') + " " + new Date().toLocaleTimeString('id-ID');
+        activityLogs.unshift({ timestamp: timeNow, unitId: unitId, actionType: actionType, desc: desc });
+        
+        // Batasi ukuran log audit agar memori tidak bengkak (maksimal 50 entri)
+        if(activityLogs.length > 50) {
+            activityLogs.pop();
+        }
+        localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+        renderActivityLog();
+    }
+
+    function renderActivityLog() {
+        const tbody = document.getElementById('activityLogTableBody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        
+        activityLogs.forEach(log => {
+            let colorType = 'bg-secondary';
+            if (log.actionType === 'ADD') colorType = 'bg-success';
+            else if (log.actionType === 'EDIT') colorType = 'bg-warning text-dark';
+            else if (log.actionType === 'DELETE') colorType = 'bg-danger';
+            else if (log.actionType === 'STOCK_TAKE') colorType = 'bg-info text-dark';
+
+            tbody.innerHTML += `<tr>
+                <td class="text-muted small">${log.timestamp}</td>
+                <td><strong class="text-navy">${log.unitId}</strong></td>
+                <td><span class="badge ${colorType}">${log.actionType}</span></td>
+                <td>${log.desc}</td>
+            </tr>`;
+        });
+    }
+
+    function clearActivityLogs() {
+        if(confirm("Apakah Anda yakin ingin menghapus seluruh log audit aktivitas operasional?")) {
+            activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "CLEAR", desc: "User membersihkan seluruh log audit riwayat operasional." }];
+            localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+            renderActivityLog();
+        }
+    }
+
+    // --- FITUR CADANGAN DAN VERIFIKASI PEMULIHAN DATABASE (BACKUP & RESTORE JSON) ---
+    function backupDatabase() {
+        const fullBackupObj = {
+            logisticsData: masterData,
+            vendorConfigs: vendorConfigs,
+            activityLogs: activityLogs
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackupObj, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `Backup_Dashboard_Isotank_${new Date().toISOString().slice(0, 10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        
+        logActivity("SYSTEM", "BACKUP", "Sistem berhasil mengekspor seluruh cadangan database ke file JSON.");
+    }
+
+    function triggerRestoreInput() {
+        document.getElementById('restoreFile').click();
+    }
+
+    function restoreDatabase(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const restoredData = JSON.parse(e.target.result);
+                if (restoredData.logisticsData && restoredData.vendorConfigs) {
+                    masterData = restoredData.logisticsData;
+                    vendorConfigs = restoredData.vendorConfigs;
+                    if(restoredData.activityLogs) activityLogs = restoredData.activityLogs;
+
+                    localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+                    localStorage.setItem('vendorConfigs', JSON.stringify(vendorConfigs));
+                    localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+
+                    alert("Database berhasil dipulihkan secara penuh!");
+                    logActivity("SYSTEM", "RESTORE", "Sistem berhasil mengimpor file JSON untuk pemulihan database penuh.");
+                    
+                    renderTable();
+                    renderActivityLog();
+                    initCharts();
+                } else {
+                    alert("Format file JSON cadangan tidak valid!");
+                }
+            } catch (err) {
+                alert("Gagal membaca file cadangan JSON: " + err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
     // --- FUNGSI RESET DATABASE ---
-    // Membantu admin atau manajer mengosongkan/memulihkan data ke kondisi bawaan jika diperlukan
     function resetDatabase() {
         if(confirm("Apakah Anda yakin ingin mengatur ulang database ke kondisi simulasi awal? Semua input data manual Anda saat ini akan ditimpa.")) {
             localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
             masterData = JSON.parse(localStorage.getItem('advancedLogisticData'));
+            
+            activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "RESET", desc: "Database diatur ulang secara paksa ke kondisi simulasi awal." }];
+            localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+
             renderTable();
             if(document.getElementById('page-stocktake').classList.contains('active')) {
                 renderStockTakeTable();
             }
+            renderActivityLog();
             initCharts();
         }
     }
@@ -715,6 +911,7 @@
         if(pageId === 'page-exec' || pageId === 'page-vendor' || pageId === 'page-utilization') initCharts();
         renderTable();
         if(pageId === 'page-stocktake') renderStockTakeTable();
+        if(pageId === 'page-activity') renderActivityLog();
     }
 
     function calculateAging(dateStr) {
@@ -837,6 +1034,8 @@
         if (vConfigModal) {
             vConfigModal.hide();
         }
+        
+        logActivity("SYSTEM", "CONFIG", `Target Forecast/PO untuk vendor ${vendor} disesuaikan secara manual.`);
         renderVendorSummary();
     }
 
@@ -848,8 +1047,6 @@
         const alertList = document.getElementById('alert-list');
         
         // --- SAFE GUARD UNTUK ELEMEN DOM YANG MUNGKIN NULL ---
-        // Jika halaman belum sepenuhnya termuat, atau ID tertentu diganti oleh fitur baru,
-        // pengaman ini mencegah munculnya "TypeError: Cannot set properties of null"
         if (trackingTable) trackingTable.innerHTML = '';
         if (agingTable) agingTable.innerHTML = '';
         if (vendorTable) vendorTable.innerHTML = '';
@@ -865,12 +1062,16 @@
         let counts = { total: 0, transit: 0, overdue: 0, full: 0 };
         let vendorData = {};
 
+        // Pengambilan Filter Multi-Kombinasi
         const filterVal = document.getElementById('searchIsotank')?.value.toUpperCase().trim() || '';
+        const filterVendor = document.getElementById('filterTrackingVendor')?.value || 'ALL';
+        const filterStatus = document.getElementById('filterTrackingStatus')?.value || 'ALL';
+        const filterLocation = document.getElementById('filterTrackingLocation')?.value || 'ALL';
 
         masterData.forEach(data => {
             counts.total++;
             
-            // Crash Guard: Mengamankan properti string yang berpotensi undefined/null di memori lokal
+            // Mengamankan properti string yang berpotensi undefined/null di memori lokal
             const statusStr = data.status || '';
             const typeStr = data.type || '';
             const trackingPosStr = data.trackingPos || '';
@@ -900,9 +1101,26 @@
                 if(statusStr.includes('Perjalanan')) vendorData[s].transit++;
             }
 
-            // Filter Pencarian Real-Time
-            if (filterVal !== '' && !idStr.toUpperCase().includes(filterVal)) {
+            // --- FILTER LOGIC MULTI-KOMBINASI ---
+            // 1. Filter Text ID Unit / Nomor PO
+            if (filterVal !== '' && !idStr.toUpperCase().includes(filterVal) && !poNumberStr.toUpperCase().includes(filterVal)) {
                 return; 
+            }
+            // 2. Filter Dropdown Vendor
+            if (filterVendor !== 'ALL' && supplierStr.toUpperCase().trim() !== filterVendor.toUpperCase().trim()) {
+                return;
+            }
+            // 3. Filter Dropdown Status Operasional
+            if (filterStatus !== 'ALL') {
+                if (filterStatus === 'Full' && !statusStr.includes('Full') && !statusStr.includes('Terinstal')) return;
+                if (filterStatus === 'Kosong' && !statusStr.includes('Kosong')) return;
+                if (filterStatus === 'Perjalanan' && !statusStr.includes('Perjalanan')) return;
+                if (filterStatus === 'Maintenance' && !statusStr.includes('Maintenance')) return;
+                if (filterStatus === 'Stop' && !statusStr.includes('Stop')) return;
+            }
+            // 4. Filter Dropdown Posisi Lapangan
+            if (filterLocation !== 'ALL' && trackingPosStr.toUpperCase().trim() !== filterLocation.toUpperCase().trim()) {
+                return;
             }
 
             let rotationDisplay = typeStr === 'Isotank' ? `<span class="badge bg-dark fw-bold">${data.rotations || 0}x Trip</span>` : '<span class="text-muted">N/A</span>';
@@ -940,7 +1158,6 @@
             }
         });
 
-        // Safe check sebelum mengubah vendorTable
         if (vendorTable) {
             Object.keys(vendorData).forEach(v => {
                 let perf = vendorData[v].transit > 2 ? '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Delay Risk</span>' : '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Healthy</span>';
@@ -948,7 +1165,6 @@
             });
         }
 
-        // Amankan manipulasi KPI DOM
         const kpiTotalEl = document.getElementById('kpi-total');
         const kpiTransitEl = document.getElementById('kpi-transit');
         const kpiOverdueEl = document.getElementById('kpi-overdue');
@@ -963,7 +1179,6 @@
             alertList.innerHTML = '<div class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> Operational Aman (Tidak ada unit overdue)</div>';
         }
         
-        // Render summary vendor secara sinkron
         renderVendorSummary();
     }
 
@@ -1107,6 +1322,8 @@
             localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
             closeQuickStockTakeModal();
             renderStockTakeTable();
+            
+            logActivity(currentStockTakeUnitId, "STOCK_TAKE", `Pemeriksaan stok mingguan dilakukan fisik dengan hasil: ${stStatus}.`);
         }
     }
 
@@ -1172,7 +1389,6 @@
         renderTable();
     }
 
-    // Mengontrol visibilitas form input riwayat log manual di dalam modal
     function toggleAddHistoryForm(show) {
         const form = document.getElementById('addHistoryForm');
         if(show) {
@@ -1244,6 +1460,8 @@
             localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
             toggleAddHistoryForm(false);
             renderHistoryList();
+            
+            logActivity(currentHistoryUnitId, "EDIT", `Siklus logistik masa lalu dengan nomor PO ${po} berhasil ditambahkan manual ke riwayat log.`);
         }
     }
 
@@ -1251,16 +1469,18 @@
         if(confirm("Apakah Anda yakin ingin menghapus catatan siklus riwayat ini?")) {
             const itemIndex = masterData.findIndex(u => u.id === currentHistoryUnitId);
             if(itemIndex >= 0 && masterData[itemIndex].history) {
+                const deletedPo = masterData[itemIndex].history[index].po;
                 masterData[itemIndex].history.splice(index, 1);
                 masterData[itemIndex].rotations = masterData[itemIndex].history.length;
 
                 localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
                 renderHistoryList();
+                
+                logActivity(currentHistoryUnitId, "EDIT", `Catatan riwayat siklus dengan nomor PO ${deletedPo} dihapus.`);
             }
         }
     }
 
-    // Melakukan verifikasi perubahan status secara real-time dan memberikan saran +1 rotasi jika unit sampai di site
     function handleStatusChange() {
         const newStatus = document.getElementById('status').value;
         const rotationsInput = document.getElementById('rotations');
@@ -1318,7 +1538,13 @@
             stockTakeNotes: ""
         };
 
+        let actionLogType = "ADD";
+        let descLogText = `Unit baru ${currentId} ditambahkan ke database lapangan.`;
+
         if (isEditMode) {
+            actionLogType = "EDIT";
+            descLogText = `Unit ${currentId} diperbarui datanya. Posisi: ${newEntry.trackingPos}, Status: ${newStatus}.`;
+            
             const oldItem = masterData.find(u => u.id === (oldId || currentId));
             if(oldItem) {
                 if (oldItem.history) newEntry.history = oldItem.history;
@@ -1349,6 +1575,9 @@
         }
 
         localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+        
+        logActivity(currentId, actionLogType, descLogText);
+        
         cancelEdit();
         showPage('page-tracking');
     });
@@ -1401,7 +1630,6 @@
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit me-2"></i> Form Update Data Lapangan';
     }
 
-    // Menyalakan fitur input manual pergantian ID
     function enableIdChange() { 
         document.getElementById('unitId').readOnly = false; 
         document.getElementById('unitId').focus();
