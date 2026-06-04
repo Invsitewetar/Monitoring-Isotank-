@@ -56,12 +56,46 @@
             font-size: 1.1rem;
             font-weight: 800;
             text-align: center;
-            padding: 0 1rem 2.0rem 1rem;
+            padding: 0 1rem 1.0rem 1rem;
             text-decoration: none;
             display: block;
             letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-sync-indicator {
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1.5rem;
             margin-bottom: 1.5rem;
+        }
+
+        .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--emerald);
+            border-radius: 50%;
+            margin-right: 5px;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
         }
 
         .sidebar .nav-item {
@@ -170,6 +204,9 @@
     <a href="#" class="sidebar-brand">
         <i class="fas fa-truck-container me-2 text-emerald"></i> ISOTANK DASHBOARD
     </a>
+    <div class="sidebar-sync-indicator">
+        <span class="pulse-dot"></span> <span id="syncText">Mempersiapkan Cloud...</span>
+    </div>
     <ul class="nav flex-column">
         <li class="nav-item">
             <a class="nav-link active" onclick="showPage('page-exec')">
@@ -265,13 +302,13 @@
                     <table class="table table-bordered table-custom align-middle text-center m-0" style="font-size: 0.8rem;">
                         <thead>
                             <tr class="table-dark">
-                                <th rowspan="2" class="align-middle" style="min-width: 150px;">Vendor</th>
-                                <th rowspan="2" class="align-middle">Forecast</th>
-                                <th rowspan="2" class="align-middle">Qty PO</th>
-                                <th colspan="2" class="col-onsite text-dark border-dark py-2">Yg Sudah Inbound / Onsite</th>
-                                <th colspan="2" class="col-koe text-dark border-dark py-2">Inbound KOE</th>
-                                <th colspan="2" class="col-hub text-dark border-dark py-2">Inbound HUB</th>
-                                <th colspan="2" class="col-outbound text-dark border-dark py-2">Outbound Isotank</th>
+                                <th rowspan="2" class="align-middle" style="min-width: 150px; color: #000000 !important;">Vendor</th>
+                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Forecast</th>
+                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Qty PO</th>
+                                <th colspan="2" class="col-onsite border-dark py-2">Yg Sudah Inbound / Onsite</th>
+                                <th colspan="2" class="col-koe border-dark py-2">Inbound KOE</th>
+                                <th colspan="2" class="col-hub border-dark py-2">Inbound HUB</th>
+                                <th colspan="2" class="col-outbound border-dark py-2">Outbound Isotank</th>
                                 <th rowspan="2" class="col-selisih align-middle text-dark">Selisih (qty kg)</th>
                             </tr>
                             <tr class="table-dark">
@@ -1569,11 +1606,13 @@
             return;
         }
 
+        // 1. Inisialisasi variabel perhitungan internal system database (Sistem Aplikasi internal)
         let autoSystemCounts = { warehouse: 0, k25: 0, total: 0 };
         let autoSystemKg = { warehouse: 0, k25: 0, total: 0 };
         let autoSystemFullCounts = { warehouse: 0, k25: 0, total: 0 };
         let autoSystemFullKg = { warehouse: 0, k25: 0, total: 0 };
         
+        // 2. Inisialisasi variabel data real pemeriksaan fisik
         let realCounts = { warehouse: 0, k25: 0, total: 0 };
         let realKg = { warehouse: 0, k25: 0, total: 0 };
         let realFullCounts = { warehouse: 0, k25: 0, total: 0 };
@@ -1588,6 +1627,7 @@
             const weightVal = parseFloat(data.weightKg) || 0;
             const isFull = statusStr.includes('Full') || statusStr.includes('Terinstal');
 
+            // Hitung internal system count & tonase
             if (trackingPosStr === 'Warehouse') {
                 autoSystemCounts.warehouse++;
                 autoSystemKg.warehouse += weightVal;
@@ -1650,6 +1690,7 @@
                 return;
             }
 
+            // Hitung Belum Di-Stock Take
             if (!stDoneThisWeek) {
                 stTodoCount++;
             }
@@ -1917,6 +1958,7 @@
             options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
         });
 
+        // Chart vendor menggunakan penamaan standar agar sejalan dengan tabel summary
         let vendors = {};
         masterData.forEach(d => { 
             if(d.supplier) {
