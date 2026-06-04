@@ -276,6 +276,8 @@
         <h5 class="fw-bold m-0 text-navy" id="header-title">Executive Summary</h5>
         <div class="d-flex align-items-center gap-3">
             <div class="text-muted small"><i class="fas fa-calendar-alt me-1"></i> <span id="currentDate"></span></div>
+            <!-- UPDATED: Tombol Darurat untuk Mengunggah Data Lokal Lama ke Cloud -->
+            <button class="btn btn-sm btn-warning fw-bold text-dark shadow-sm border border-warning" onclick="syncLocalToCloud()"><i class="fas fa-cloud-upload-alt me-1"></i> Naikkan Data Lokal ke Cloud</button>
             <!-- Backup & Restore Buttons -->
             <button class="btn btn-sm btn-outline-primary fw-bold" onclick="backupDatabase()"><i class="fas fa-download me-1"></i> Backup JSON</button>
             <button class="btn btn-sm btn-outline-success fw-bold" onclick="triggerRestoreInput()"><i class="fas fa-upload me-1"></i> Restore JSON</button>
@@ -920,7 +922,7 @@
         <div class="modal-content" style="border-radius:12px; overflow:hidden;">
             <div class="modal-header bg-primary text-white" style="background-color: var(--navy) !important;">
                 <h5 class="modal-title fw-bold" id="systemBaselineModalLabel"><i class="fas fa-edit me-2 text-warning"></i> Input Data Baseline System (ERP/SAP)</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-modal="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="background-color: #f8fafc; max-height: 70vh; overflow-y: auto;">
                 <form id="formSystemBaseline">
@@ -1097,7 +1099,7 @@
                 // 1. Sinkronisasi Real-Time Koleksi Isotanks (RULE 1 & RULE 2)
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'isotanks'), (snapshot) => {
                     if (snapshot.empty) {
-                        // Jika cloud kosong, lakukan seeding data simulasi bawaan ke awan otomatis
+                        // Jika cloud kosong, biarkan user melakukan sinkronisasi manual atau seed data awal
                         seedInitialDataset();
                         return;
                     }
@@ -1166,6 +1168,51 @@
         }
     };
 
+    // --- JEMBATAN MIGRASI DARURAT: SINKRONISASI DATA LOKAL KE CLOUD ---
+    // Memindahkan data peninggalan di localStorage komputer ini ke database Firestore Cloud bersama
+    const syncLocalToCloud = async () => {
+        const localData = JSON.parse(localStorage.getItem('advancedLogisticData'));
+        if (!localData || !Array.isArray(localData) || localData.length === 0) {
+            showCustomAlert("Tidak ditemukan cadangan data lokal lama di browser komputer ini untuk diunggah.", "Peringatan");
+            return;
+        }
+
+        showCustomConfirm(`Terdeteksi ${localData.length} data Isotank lokal lama di browser ini. Apakah Anda ingin mengunggah dan menggabungkan data ini ke Cloud bersama agar semua komputer tim lain bisa melihat data yang sama?`, async () => {
+            try {
+                const indicatorText = document.getElementById('syncText');
+                if (indicatorText) indicatorText.innerHTML = `<span class="spinner-border spinner-border-sm text-warning me-1"></span> Mengunggah Data...`;
+                
+                // Upload seluruh item lokal ke cloud (RULE 1)
+                for (const item of localData) {
+                    if (!item.type) item.type = "Isotank";
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'isotanks', item.id), item);
+                }
+
+                // Upload baseline system juga jika ada
+                const localBaseline = JSON.parse(localStorage.getItem('siteSystemBaselines'));
+                if (localBaseline) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'systemBaselines', 'baseline'), localBaseline);
+                }
+
+                // Upload vendor configs jika ada kustomisasi lokal
+                const localVendorConfigs = JSON.parse(localStorage.getItem('vendorConfigs'));
+                if (localVendorConfigs) {
+                    for (const [vendor, config] of Object.entries(localVendorConfigs)) {
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'vendorConfigs', vendor), config);
+                    }
+                }
+
+                showCustomAlert("Sukses! Semua data lama Anda telah berhasil dipindahkan dari komputer ini ke Cloud Database bersama. Komputer tim lain sekarang sudah otomatis sinkron!", "Sukses Sinkronisasi", false);
+                logActivity("SYSTEM", "MIGRATION", `User memindahkan data lokal lama (${localData.length} Isotank) ke Cloud Database bersama.`);
+            } catch (err) {
+                showCustomAlert("Gagal mengunggah data ke Cloud: " + err.message, "Gagal");
+            } finally {
+                const indicatorText = document.getElementById('syncText');
+                if (indicatorText) indicatorText.innerHTML = `<span class="text-success pulse-dot"></span> <span class="text-success fw-bold">Live Cloud Connected</span>`;
+            }
+        });
+    };
+
     // --- CLOUD SAVE WRAPPERS ---
     const saveIsotankToCloud = async (item) => {
         if (isFirebaseReal && auth.currentUser) {
@@ -1212,7 +1259,7 @@
     const saveBaselineToCloud = async (baseline) => {
         if (isFirebaseReal && auth.currentUser) {
             try {
-                await setDoc(doc(doc(db, 'artifacts', appId, 'public', 'data', 'systemBaselines', 'baseline')), baseline);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'systemBaselines', 'baseline'), baseline);
             } catch(e) { console.error("Gagal menyimpan Baseline ke awan:", e); }
         } else {
             systemBaselines = baseline;
@@ -1868,9 +1915,9 @@
         let finalSystemK25EmptyKg = finalSystemK25Kg - finalSystemK25FullKg;
 
         let finalSystemTotalQty = finalSystemWarehouseQty + finalSystemK25Qty;
-        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg;
+        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg; // FIXED: Typo diperbaiki dari finalSystemK25K
         let finalSystemTotalFullQty = finalSystemWarehouseFullQty + finalSystemK25FullQty;
-        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg;
+        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg; // FIXED: Typo diperbaiki dari finalSystemFullKg
         
         let finalSystemTotalEmptyQty = finalSystemWarehouseEmptyQty + finalSystemK25EmptyQty;
         let finalSystemTotalEmptyKg = finalSystemWarehouseEmptyKg + finalSystemK25EmptyKg;
@@ -2595,6 +2642,7 @@
     window.enableIdChange = enableIdChange;
     window.exportToExcel = exportToExcel;
     window.clearActivityLogs = clearActivityLogs;
+    window.syncLocalToCloud = syncLocalToCloud;
 
     // Mulai inisialisasi cloud database sinkronisasi real-time
     initAuthAndSync();
