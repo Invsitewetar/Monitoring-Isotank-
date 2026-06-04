@@ -195,6 +195,16 @@
         .table-custom thead th.col-outbound { background-color: var(--excel-gray) !important; color: #000000 !important; }
         .table-custom thead th.col-selisih { background-color: var(--excel-selisih) !important; color: #000000 !important; }
 
+        /* UPDATED: Mengatur class background abu-abu premium untuk header row */
+        .table-gray {
+            background-color: #cbd5e1 !important;
+            color: #000000 !important;
+        }
+        .table-gray th {
+            background-color: #cbd5e1 !important;
+            color: #000000 !important;
+        }
+
         /* Alert Section styles */
         .alert-urgent { border-left: 5px solid var(--critical); background: #fef2f2; }
 
@@ -461,9 +471,9 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-custom text-center align-middle m-0" style="font-size: 0.85rem;">
-                    <thead>
+                    <thead class="table-gray">
                         <tr>
-                            <th rowspan="2" class="align-middle">Area Lapangan</th>
+                            <th rowspan="2" class="align-middle" style="color: #000000 !important;">Area Lapangan</th>
                             <th colspan="2" class="bg-primary text-white border-dark">Qty by System</th>
                             <th colspan="2" class="bg-success text-white border-dark">Qty Real (Fisik)</th>
                             <th colspan="2" class="bg-danger text-white border-dark">Selisih (System vs Real)</th>
@@ -616,7 +626,7 @@
                                         <option value="Maintenance">Maintenance</option>
                                         <option value="Tidak Aktif / Stop Refill">Tidak Aktif / Stop Refill ⚪</option>
                                     </select>
-                                end</div>
+                                </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label small fw-bold text-danger">Status PO</label>
                                     <select id="poStatus" class="form-select border-danger">
@@ -873,7 +883,7 @@
         <div class="modal-content" style="border-radius:12px; overflow:hidden;">
             <div class="modal-header bg-navy text-white" style="background-color: var(--navy);">
                 <h5 class="modal-title fw-bold" id="vendorConfigModalLabel"><i class="fas fa-edit me-2 text-warning"></i> Set Target Contract Vendor</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-modal="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="background-color: #f8fafc;">
                 <form id="formVendorConfig">
@@ -986,63 +996,258 @@
     </div>
 </div>
 
-<script>
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+<!-- --- MODAL CUSTOM ALERT (PENGGANTI NATIVE ALERT YANG TERPROTEKSI CSP) --- -->
+<div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius:12px;">
+            <div class="modal-header bg-danger text-white" id="customAlertHeader">
+                <h5 class="modal-title fw-bold" id="customAlertTitle"><i class="fas fa-exclamation-triangle me-2"></i> Peringatan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="customAlertMessage">
+                Pesan sistem.
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    // --- INITIAL DATASET ---
-    const initialDataset = [
-        { id: "SJIU2322090", type: "Isotank", poNumber: "99616", poStatus: "Normal", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "NTTU1753699", type: "Isotank", poNumber: "99617", poStatus: "Normal", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322001", type: "Isotank", poNumber: "99618", poStatus: "Normal", cargo: "Methanol", weightKg: 35200, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221541", type: "Isotank", poNumber: "99619", poStatus: "Normal", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221710", type: "Isotank", poNumber: "99620", poStatus: "Normal", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221536", type: "Isotank", poNumber: "99622", poStatus: "Normal", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "DJEU0303868", type: "Isotank", poNumber: "99997", poStatus: "Normal", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221705", type: "Isotank", poNumber: "99998", poStatus: "Normal", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [
-            { po: "90001", cargo: "Methanol", weightKg: 34800, supplier: "DWIJAYA", outbound: "2026-01-10", inbound: "2026-04-05", psStatus: "Done Issued", psNumber: "PS-90001", psQty: 34800 }
-        ] },
-        { id: "NTTU1753750", type: "Isotank", poNumber: "99999", poStatus: "Normal", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322043", type: "Isotank", poNumber: "100000", poStatus: "Normal", cargo: "Methanol", weightKg: 35150, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "NTTU1753765", type: "Isotank", poNumber: "100001", poStatus: "Normal", cargo: "Methanol", weightKg: 35250, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322059", type: "Isotank", poNumber: "100002", poStatus: "Normal", cargo: "Methanol", weightKg: 34880, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322064", type: "Isotank", poNumber: "100003", poStatus: "Normal", cargo: "Methanol", weightKg: 34970, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2001275", type: "Isotank", poNumber: "100004", poStatus: "Normal", cargo: "Methanol", weightKg: 35050, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221691", type: "Isotank", poNumber: "99615", poStatus: "Normal", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "NTTU1753690", type: "Isotank", poNumber: "99614", poStatus: "Normal", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "DJEU0303641", type: "Isotank", poNumber: "97576", poStatus: "Normal", cargo: "Empty", weightKg: 0, status: "Standby (Kosong)", trackingPos: "Warehouse", supplier: "DWI101IDR", dateOutbound: "", dateInboundSite: "2026-06-01", rotations: 5, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Fisik kosong, PS Belum Issued.", psStatus: "Belum Issued", psNumber: "PS-97576", psQty: 33600, dateEmpty: "2026-06-01", idChanges: [{ oldId: "DJEU0303600", newId: "DJEU0303641", dateChanged: "2026-05-10 14:32:01" }], history: [] }
-    ];
+<script type="module">
+    // --- IMPORT FIREBASE LATEST WEB SDK CDNS ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Mengambil log aktivitas audit lapangan dari memori lokal
-    let activityLogs = JSON.parse(localStorage.getItem('activityLogs')) || [
-        { timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "INITIALIZE", desc: "Database sistem diinisialisasi pertama kali dengan data simulasi bawaan." }
-    ];
+    // --- INITIALIZE FIREBASE WITH MULTI-COMPUTER LIVE SINKRONISASI ---
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'isotank-enterprise-pro';
+    let firebaseConfig;
+    let isFirebaseReal = false;
 
-    if (!localStorage.getItem('advancedLogisticData')) {
-        localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
+    try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+            firebaseConfig = JSON.parse(__firebase_config);
+            isFirebaseReal = true;
+        } else {
+            // Fallback mock credentials untuk preview lokal aman
+            firebaseConfig = {
+                apiKey: "mock-api-key",
+                authDomain: "mock-auth-domain",
+                projectId: "mock-project-id",
+                storageBucket: "mock-storage-bucket",
+                appId: "mock-app-id"
+            };
+        }
+    } catch(e) {
+        firebaseConfig = { apiKey: "mock-api-key" };
     }
 
-    let masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || [];
-    
-    // --- INTEGRASI STRUKTUR MIGRASI DATA SINKRON OTOMATIS ---
-    masterData = masterData.map(item => {
-        if (!item.type) {
-            item.type = "Isotank";
-        }
-        return item;
-    });
-    localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
-    
-    // Database target contract khusus vendor
-    let vendorConfigs = JSON.parse(localStorage.getItem('vendorConfigs')) || {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Variabel state logistik global
+    let masterData = [];
+    let activityLogs = [];
+    let systemBaselines = null;
+
+    let vendorConfigs = {
         "ROLIMEX": { forecast: 310000, qtyPo: 307090 },
         "DWIJAYA": { forecast: 300000, qtyPo: 300000 },
         "ENERGI JAYA INOVASI PT": { forecast: 50000, qtyPo: 50000 },
         "ADIMITRA": { forecast: 125000, qtyPo: 125000 }
     };
 
-    // Database manual baseline data system
-    let systemBaselines = JSON.parse(localStorage.getItem('siteSystemBaselines')) || null;
+    // --- PROYEKSI AWAL SINKRONISASI MULTI-KOMPUTER ---
+    const initAuthAndSync = async () => {
+        if (!isFirebaseReal) {
+            // Jika berjalan di lokal tanpa kredensial Firebase asli, gunakan fallback localStorage agar preview tetap interaktif
+            document.getElementById('syncText').innerHTML = `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i> Mode Offline Lokal</span>`;
+            masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || initialDataset;
+            activityLogs = JSON.parse(localStorage.getItem('activityLogs')) || [
+                { timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "INITIALIZE", desc: "Aplikasi berjalan di penyimpanan lokal komputer Anda." }
+            ];
+            systemBaselines = JSON.parse(localStorage.getItem('siteSystemBaselines')) || null;
+            vendorConfigs = JSON.parse(localStorage.getItem('vendorConfigs')) || vendorConfigs;
+            renderTable();
+            renderActivityLog();
+            initCharts();
+            return;
+        }
 
+        // Jalankan Autentikasi Awan (RULE 3)
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (err) {
+            console.error("Firebase auth failed:", err);
+            document.getElementById('syncText').innerHTML = `<span class="text-danger"><i class="fas fa-times-circle me-1"></i> Eror Cloud Auth</span>`;
+            return;
+        }
+
+        // Listener Autentikasi untuk memulai sinkronisasi langsung (onSnapshot)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('syncText').innerHTML = `<span class="text-success pulse-dot"></span> <span class="text-success fw-bold">Live Cloud Connected</span>`;
+                
+                // 1. Sinkronisasi Real-Time Koleksi Isotanks (RULE 1 & RULE 2)
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'isotanks'), (snapshot) => {
+                    if (snapshot.empty) {
+                        // Jika cloud kosong, lakukan seeding data simulasi bawaan ke awan otomatis
+                        seedInitialDataset();
+                        return;
+                    }
+                    const data = [];
+                    snapshot.forEach(doc => {
+                        data.push(doc.data());
+                    });
+                    masterData = data;
+                    localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+                    renderTable();
+                    if (document.getElementById('page-stocktake').classList.contains('active')) {
+                        renderStockTakeTable();
+                    }
+                    initCharts();
+                }, (err) => console.error("Snapshot Isotank Eror:", err));
+
+                // 2. Sinkronisasi Real-Time Kontrak Vendor
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'vendorConfigs'), (snapshot) => {
+                    snapshot.forEach(doc => {
+                        vendorConfigs[doc.id] = doc.data();
+                    });
+                    localStorage.setItem('vendorConfigs', JSON.stringify(vendorConfigs));
+                    renderVendorSummary();
+                }, (err) => console.error("Snapshot VendorConfigs Eror:", err));
+
+                // 3. Sinkronisasi Real-Time ERP System Baselines
+                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'systemBaselines', 'baseline'), (snapshot) => {
+                    if (snapshot.exists()) {
+                        systemBaselines = snapshot.data();
+                        localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
+                        renderStockTakeTable();
+                    }
+                }, (err) => console.error("Snapshot SystemBaselines Eror:", err));
+
+                // 4. Sinkronisasi Real-Time Log Audit Aktivitas
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activityLogs'), (snapshot) => {
+                    const logs = [];
+                    snapshot.forEach(doc => {
+                        logs.push(doc.data());
+                    });
+                    // Pengurutan lokal dalam memori komputer (RULE 2)
+                    logs.sort((a, b) => b.epoch - a.epoch);
+                    activityLogs = logs;
+                    localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+                    renderActivityLog();
+                }, (err) => console.error("Snapshot ActivityLogs Eror:", err));
+
+            } else {
+                document.getElementById('syncText').innerHTML = `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i> Terputus</span>`;
+            }
+        });
+    };
+
+    // --- LOGIKA SEEDING DATA AWAL KE CLOUD ---
+    const seedInitialDataset = async () => {
+        if (!auth.currentUser) return;
+        try {
+            for (const item of initialDataset) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'isotanks', item.id), item);
+            }
+            for (const [vendor, config] of Object.entries(vendorConfigs)) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'vendorConfigs', vendor), config);
+            }
+        } catch (err) {
+            console.error("Seeding database awan gagal:", err);
+        }
+    };
+
+    // --- CLOUD SAVE WRAPPERS ---
+    const saveIsotankToCloud = async (item) => {
+        if (isFirebaseReal && auth.currentUser) {
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'isotanks', item.id), item);
+            } catch(e) { console.error("Gagal menyimpan Isotank ke awan:", e); }
+        } else {
+            // Local fallback
+            const idx = masterData.findIndex(u => u.id === item.id);
+            if (idx >= 0) masterData[idx] = item;
+            else masterData.push(item);
+            localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+            renderTable();
+            initCharts();
+        }
+    };
+
+    const deleteIsotankFromCloud = async (itemId) => {
+        if (isFirebaseReal && auth.currentUser) {
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'isotanks', itemId));
+            } catch(e) { console.error("Gagal menghapus Isotank dari awan:", e); }
+        } else {
+            // Local fallback
+            masterData = masterData.filter(u => u.id !== itemId);
+            localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+            renderTable();
+            initCharts();
+        }
+    };
+
+    const saveVendorConfigToCloud = async (vendor, config) => {
+        if (isFirebaseReal && auth.currentUser) {
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'vendorConfigs', vendor), config);
+            } catch(e) { console.error("Gagal menyimpan VendorConfig ke awan:", e); }
+        } else {
+            vendorConfigs[vendor] = config;
+            localStorage.setItem('vendorConfigs', JSON.stringify(vendorConfigs));
+            renderVendorSummary();
+        }
+    };
+
+    const saveBaselineToCloud = async (baseline) => {
+        if (isFirebaseReal && auth.currentUser) {
+            try {
+                await setDoc(doc(doc(db, 'artifacts', appId, 'public', 'data', 'systemBaselines', 'baseline')), baseline);
+            } catch(e) { console.error("Gagal menyimpan Baseline ke awan:", e); }
+        } else {
+            systemBaselines = baseline;
+            localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
+            renderStockTakeTable();
+        }
+    };
+
+    const saveActivityLogToCloud = async (log) => {
+        if (isFirebaseReal && auth.currentUser) {
+            try {
+                const logId = log.epoch + "-" + Math.random().toString(36).substr(2, 9);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'activityLogs', logId), log);
+            } catch(e) { console.error("Gagal menyimpan Log ke awan:", e); }
+        }
+    };
+
+    // --- FUNGSI AUDIT LOGGER LAPANGAN ---
+    function logActivity(unitId, actionType, desc) {
+        const timeNow = new Date().toLocaleDateString('id-ID') + " " + new Date().toLocaleTimeString('id-ID');
+        const logItem = { timestamp: timeNow, epoch: Date.now(), unitId: unitId, actionType: actionType, desc: desc };
+        
+        // Simpan lokal instan
+        activityLogs.unshift(logItem);
+        if(activityLogs.length > 50) {
+            activityLogs.pop();
+        }
+        localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+        renderActivityLog();
+
+        // Kirim ke database awan secara asynchronous
+        saveActivityLogToCloud(logItem);
+    }
+
+    // --- INTERACTIVE UI FUNCTIONALITIES ---
     let isEditMode = false;
     let myCharts = {};
     let originalItemState = null;
@@ -1054,147 +1259,6 @@
     let vConfigModal = null;
     let sysBaseModalObj = null;
 
-    // --- PROYEKSI CUSTOM CONFIRM MODAL ---
-    let confirmModalObj = null;
-    function showCustomConfirm(msg, onConfirm) {
-        const modalEl = document.getElementById('customConfirmModal');
-        if (!modalEl) return;
-        document.getElementById('customConfirmMessage').innerText = msg;
-        const confirmBtn = document.getElementById('customConfirmBtn');
-        
-        // Gandakan elemen tombol konfirmasi untuk mereset seluruh event listeners lama
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        
-        newConfirmBtn.addEventListener('click', () => {
-            if (confirmModalObj) confirmModalObj.hide();
-            onConfirm();
-        });
-        
-        confirmModalObj = new bootstrap.Modal(modalEl);
-        confirmModalObj.show();
-    }
-
-    // --- FUNSI AUDIT LOGGER LAPANGAN ---
-    function logActivity(unitId, actionType, desc) {
-        const timeNow = new Date().toLocaleDateString('id-ID') + " " + new Date().toLocaleTimeString('id-ID');
-        activityLogs.unshift({ timestamp: timeNow, unitId: unitId, actionType: actionType, desc: desc });
-        
-        if(activityLogs.length > 50) {
-            activityLogs.pop();
-        }
-        localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
-        renderActivityLog();
-    }
-
-    function renderActivityLog() {
-        const tbody = document.getElementById('activityLogTableBody');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        
-        activityLogs.forEach(log => {
-            let colorType = 'bg-secondary';
-            if (log.actionType === 'ADD') colorType = 'bg-success';
-            else if (log.actionType === 'EDIT') colorType = 'bg-warning text-dark';
-            else if (log.actionType === 'DELETE') colorType = 'bg-danger';
-            else if (log.actionType === 'STOCK_TAKE') colorType = 'bg-info text-dark';
-
-            tbody.innerHTML += `<tr>
-                <td class="text-muted small">${log.timestamp}</td>
-                <td><strong class="text-navy">${log.unitId}</strong></td>
-                <td><span class="badge ${colorType}">${log.actionType}</span></td>
-                <td>${log.desc}</td>
-            </tr>`;
-        });
-    }
-
-    function clearActivityLogs() {
-        showCustomConfirm("Apakah Anda yakin ingin menghapus seluruh log audit aktivitas operasional?", () => {
-            activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "CLEAR", desc: "User membersihkan seluruh log audit riwayat operasional." }];
-            localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
-            renderActivityLog();
-        });
-    }
-
-    // --- FITUR CADANGAN DAN VERIFIKASI PEMULIHAN DATABASE (BACKUP & RESTORE JSON) ---
-    function backupDatabase() {
-        const fullBackupObj = {
-            logisticsData: masterData,
-            vendorConfigs: vendorConfigs,
-            activityLogs: activityLogs,
-            systemBaselines: systemBaselines
-        };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackupObj, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `Backup_Dashboard_Isotank_${new Date().toISOString().slice(0, 10)}.json`);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        
-        logActivity("SYSTEM", "BACKUP", "Sistem berhasil mengekspor seluruh cadangan database ke file JSON.");
-    }
-
-    function triggerRestoreInput() {
-        document.getElementById('restoreFile').click();
-    }
-
-    function restoreDatabase(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const restoredData = JSON.parse(e.target.result);
-                if (restoredData.logisticsData && restoredData.vendorConfigs) {
-                    masterData = restoredData.logisticsData;
-                    vendorConfigs = restoredData.vendorConfigs;
-                    if(restoredData.activityLogs) activityLogs = restoredData.activityLogs;
-                    if(restoredData.systemBaselines) systemBaselines = restoredData.systemBaselines;
-
-                    localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
-                    localStorage.setItem('vendorConfigs', JSON.stringify(vendorConfigs));
-                    localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
-                    if(systemBaselines) localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
-
-                    showCustomAlert("Database berhasil dipulihkan secara penuh!", "Sukses Pemulihan", false);
-                    logActivity("SYSTEM", "RESTORE", "Sistem berhasil mengimpor file JSON untuk pemulihan database penuh.");
-                    
-                    renderTable();
-                    renderActivityLog();
-                    initCharts();
-                } else {
-                    showCustomAlert("Format file JSON cadangan tidak valid!", "Gagal Pemulihan");
-                }
-            } catch (err) {
-                showCustomAlert("Gagal membaca file cadangan JSON: " + err.message, "Gagal Pemulihan");
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    // --- FUNGSI RESET DATABASE ---
-    function resetDatabase() {
-        showCustomConfirm("Apakah Anda yakin ingin mengatur ulang database ke kondisi simulasi awal? Semua data input manual Anda saat ini akan ditimpa.", () => {
-            localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
-            masterData = JSON.parse(localStorage.getItem('advancedLogisticData'));
-            
-            localStorage.removeItem('siteSystemBaselines');
-            systemBaselines = null;
-
-            activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "RESET", desc: "Database diatur ulang secara paksa ke kondisi simulasi awal." }];
-            localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
-
-            renderTable();
-            if(document.getElementById('page-stocktake').classList.contains('active')) {
-                renderStockTakeTable();
-            }
-            renderActivityLog();
-            initCharts();
-        });
-    }
-
-    // --- MANAJEMEN PINDAH HALAMAN (TAB NAVIGATION) ---
     function showPage(pageId) {
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
@@ -1218,50 +1282,7 @@
         if(pageId === 'page-activity') renderActivityLog();
     }
 
-    function calculateAging(dateStr) {
-        if(!dateStr || typeof dateStr !== 'string' || dateStr.startsWith('0001')) return 0;
-        const diff = new Date() - new Date(dateStr);
-        return Math.floor(diff / (1000 * 60 * 60 * 24));
-    }
-
-    function cleanDateDisplay(dateStr) {
-        if(!dateStr || typeof dateStr !== 'string' || dateStr === "" || dateStr.startsWith('0001')) {
-            return '-';
-        }
-        return dateStr;
-    }
-
-    // --- FUNGSI SMART VENDOR MAPPING (UNTUK SINKRONISASI NAMA ALIAS) ---
-    function getStandardVendorName(supplierName) {
-        if (!supplierName) return "";
-        const name = supplierName.toUpperCase().trim();
-        if (name.includes("ROLIMEX") || name.includes("ROL100IDR")) {
-            return "ROLIMEX";
-        }
-        if (name.includes("DWIJAYA") || name.includes("DWI101IDR")) {
-            return "DWIJAYA";
-        }
-        if (name.includes("ENERGI JAYA") || name.includes("ENERGI")) {
-            return "ENERGI JAYA INOVASI PT";
-        }
-        if (name.includes("ADIMITRA")) {
-            return "ADIMITRA";
-        }
-        return supplierName;
-    }
-
-    // Menghitung rute/jalur penyeberangan (KOE vs HUB) secara konsisten
-    function getShipmentRoute(poNumber, id) {
-        const str = (poNumber || id || "").toUpperCase();
-        let code = 0;
-        for (let i = 0; i < str.length; i++) {
-            code += str.charCodeAt(i);
-        }
-        return (code % 2 === 0) ? "KOE" : "HUB";
-    }
-
     // --- RENDERING TABEL SUMMARY VENDOR (EXCEL-STYLE SINKRON DENGAN DOKUMEN LAPORAN) ---
-    // UPDATED: Berdasarkan instruksi user, tabel summary ini dimodifikasi sepenuhnya untuk menyajikan rincian jumlah FISIK ISOTANK per-status.
     function renderVendorSummary() {
         const tbody = document.getElementById('vendorSummaryTableBody');
         if (!tbody) return;
@@ -1296,7 +1317,6 @@
                     totalIsotank++;
                     let weight = parseFloat(item.weightKg) || 0;
                     const isFull = itemStatus.includes('Full') || itemStatus.includes('Terinstal');
-                    const isEmpty = itemStatus.includes('Kosong') || itemStatus.includes('Standby');
 
                     // On Site (Warehouse & 25KT)
                     if (itemTrackingPos === 'Warehouse' || itemTrackingPos === '25KT') {
@@ -1374,15 +1394,14 @@
         const forecast = parseInt(document.getElementById('configForecast').value) || 0;
         const qtyPo = parseInt(document.getElementById('configQtyPo').value) || 0;
 
-        vendorConfigs[vendor] = { forecast, qtyPo };
-        localStorage.setItem('vendorConfigs', JSON.stringify(vendorConfigs));
+        const newConfig = { forecast, qtyPo };
+        saveVendorConfigToCloud(vendor, newConfig);
 
         if (vConfigModal) {
             vConfigModal.hide();
         }
         
         logActivity("SYSTEM", "CONFIG", `Target Forecast/PO untuk vendor ${vendor} disesuaikan secara manual.`);
-        renderVendorSummary();
     }
 
     // --- MODAL CONFIG SYSTEM BASELINE ---
@@ -1454,7 +1473,7 @@
         const kFullQty = parseInt(document.getElementById('baseK25FullQty').value) || 0;
         const kFullKg = parseFloat(document.getElementById('baseK25FullKg').value) || 0;
 
-        systemBaselines = {
+        const baseline = {
             warehouseQty: wQty,
             warehouseKg: wKg,
             warehouseFullQty: wFullQty,
@@ -1465,14 +1484,13 @@
             k25FullKg: kFullKg
         };
 
-        localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
+        saveBaselineToCloud(baseline);
 
         if (sysBaseModalObj) {
             sysBaseModalObj.hide();
         }
 
         logActivity("SYSTEM", "CONFIG", `Manual Baseline Data System disesuaikan: WH (${wQty} Isotank / ${wKg} kg), Terisi (${wFullQty} Isotank / ${wFullKg} kg); 25KT (${kQty} Isotank / ${kKg} kg), Terinstal (${kFullQty} Isotank / ${kFullKg} kg).`);
-        renderStockTakeTable();
     }
 
     // --- RENDERING TABEL UTAMA (SHIPMENT TRACKING) - DENGAN CRASH GUARD ---
@@ -1539,7 +1557,7 @@
                 }
             }
 
-            // --- ALARM PINTAR PO GOOD RETURN (TIDAK MASUK SYSTEM) ---
+            // --- ALARM PINTAR PO GOOD RETURN ---
             if (poStatusStr === 'Good Return') {
                 if (alertList) {
                     alertList.innerHTML += `<div class="mb-2 border-bottom pb-2 text-danger"><span class="badge bg-danger me-1"><i class="fas fa-exclamation-circle"></i> PO GOOD RETURN</span> <b>${idStr}</b> berstatus Good Return - PO Tidak Masuk System ERP!</div>`;
@@ -1850,9 +1868,9 @@
         let finalSystemK25EmptyKg = finalSystemK25Kg - finalSystemK25FullKg;
 
         let finalSystemTotalQty = finalSystemWarehouseQty + finalSystemK25Qty;
-        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg; // FIXED: Typo diperbaiki dari finalSystemK25K
+        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg;
         let finalSystemTotalFullQty = finalSystemWarehouseFullQty + finalSystemK25FullQty;
-        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg; // FIXED: Typo diperbaiki dari finalSystemFullKg
+        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg;
         
         let finalSystemTotalEmptyQty = finalSystemWarehouseEmptyQty + finalSystemK25EmptyQty;
         let finalSystemTotalEmptyKg = finalSystemWarehouseEmptyKg + finalSystemK25EmptyKg;
@@ -2409,23 +2427,10 @@
             if(oldIndex >= 0) {
                 masterData.splice(oldIndex, 1);
             }
+            deleteIsotankFromCloud(oldId);
         }
 
-        const existingIndex = masterData.findIndex(u => u.id === currentId);
-        if (existingIndex >= 0) {
-            if(!isEditMode) {
-                newEntry.history = masterData[existingIndex].history || [];
-                newEntry.lastStockTakeDate = masterData[existingIndex].lastStockTakeDate || "";
-                newEntry.stockTakeStatus = masterData[existingIndex].stockTakeStatus || "";
-                newEntry.stockTakeNotes = masterData[existingIndex].stockTakeNotes || "";
-                newEntry.idChanges = masterData[existingIndex].idChanges || [];
-            }
-            masterData[existingIndex] = newEntry;
-        } else {
-            masterData.push(newEntry);
-        }
-
-        localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
+        saveIsotankToCloud(newEntry);
         
         logActivity(currentId, actionLogType, descLogText);
         
@@ -2567,16 +2572,32 @@
         XLSX.writeFile(workbook, `Tracking_Isotank_Enterprise_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    // Memersiapkan indikator live cloud
-    setTimeout(() => {
-        const syncText = document.getElementById('syncText');
-        if (syncText) {
-            syncText.innerText = "Live Cloud Sync Terhubung";
-        }
-    }, 1000);
+    // --- BIND ALL MODULE SCOPED FUNCTIONS TO GLOBAL WINDOW OBJECT FOR INLINE EVENT HANDLERS ---
+    window.showPage = showPage;
+    window.resetDatabase = resetDatabase;
+    window.backupDatabase = backupDatabase;
+    window.triggerRestoreInput = triggerRestoreInput;
+    window.restoreDatabase = restoreDatabase;
+    window.openVendorConfigModal = openVendorConfigModal;
+    window.saveVendorConfig = saveVendorConfig;
+    window.openSystemBaselineModal = openSystemBaselineModal;
+    window.saveSystemBaseline = saveSystemBaseline;
+    window.openHistoryModal = openHistoryModal;
+    window.closeHistoryModal = closeHistoryModal;
+    window.toggleAddHistoryForm = toggleAddHistoryForm;
+    window.saveNewHistoryItem = saveNewHistoryItem;
+    window.deleteHistoryItem = deleteHistoryItem;
+    window.openQuickStockTakeModal = openQuickStockTakeModal;
+    window.closeQuickStockTakeModal = closeQuickStockTakeModal;
+    window.saveQuickStockTake = saveQuickStockTake;
+    window.editRow = editRow;
+    window.cancelEdit = cancelEdit;
+    window.enableIdChange = enableIdChange;
+    window.exportToExcel = exportToExcel;
+    window.clearActivityLogs = clearActivityLogs;
 
-    renderTable();
-    initCharts();
+    // Mulai inisialisasi cloud database sinkronisasi real-time
+    initAuthAndSync();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
