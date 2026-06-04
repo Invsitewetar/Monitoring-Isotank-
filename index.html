@@ -179,25 +179,24 @@
 
         /* Tables Custom Styles */
         .table-custom { background: white; border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
-        .table-custom thead { background-color: #f1f5f9; border-bottom: 2px solid #e2e8f0; color: #334155; }
         
-        /* Custom Table Header Text Color Forcing */
-        .table-custom thead tr th {
-            color: #334155; /* Default Dark Gray */
+        /* UPDATED: Memaksa semua th default di table-custom berwarna abu-abu & tulisan hitam kontras tinggi */
+        .table-custom thead th {
+            background-color: #cbd5e1 !important;
+            color: #000000 !important;
+            font-weight: bold;
+            border-color: #94a3b8 !important;
         }
-        .table-custom thead tr.table-dark th {
-            color: #ffffff !important; /* Force readable White Text for Dark Table Rows */
-        }
+        
+        /* Mempertahankan warna pastel kolom excel agar tidak tertimpa th general */
+        .table-custom thead th.col-onsite { background-color: var(--excel-yellow) !important; color: #000000 !important; }
+        .table-custom thead th.col-koe { background-color: var(--excel-green) !important; color: #000000 !important; }
+        .table-custom thead th.col-hub { background-color: var(--excel-blue) !important; color: #000000 !important; }
+        .table-custom thead th.col-outbound { background-color: var(--excel-gray) !important; color: #000000 !important; }
+        .table-custom thead th.col-selisih { background-color: var(--excel-selisih) !important; color: #000000 !important; }
 
         /* Alert Section styles */
         .alert-urgent { border-left: 5px solid var(--critical); background: #fef2f2; }
-
-        /* Color Coding Excel-Style dengan Text Hitam Kontras Tinggi */
-        .col-onsite { background-color: var(--excel-yellow) !important; color: #000000 !important; }
-        .col-koe { background-color: var(--excel-green) !important; color: #000000 !important; }
-        .col-hub { background-color: var(--excel-blue) !important; color: #000000 !important; }
-        .col-outbound { background-color: var(--excel-gray) !important; color: #000000 !important; }
-        .col-selisih { background-color: var(--excel-selisih) !important; font-weight: bold; color: #000000 !important; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -309,26 +308,25 @@
                 <div class="table-responsive shadow-sm rounded-3">
                     <table class="table table-bordered table-custom align-middle text-center m-0" style="font-size: 0.8rem;">
                         <thead>
-                            <tr class="table-dark">
-                                <!-- UPDATED: Text Vendor, Forecast, Qty PO di bawah diubah menjadi warna putih pekat (#ffffff) -->
-                                <th rowspan="2" class="align-middle" style="min-width: 150px; color: #ffffff !important;">Vendor</th>
-                                <th rowspan="2" class="align-middle" style="color: #ffffff !important;">Forecast</th>
-                                <th rowspan="2" class="align-middle" style="color: #ffffff !important;">Qty PO</th>
-                                <th colspan="2" class="col-onsite text-dark border-dark py-2">Yg Sudah Inbound / Onsite</th>
-                                <th colspan="2" class="col-koe text-dark border-dark py-2">Inbound KOE</th>
-                                <th colspan="2" class="col-hub text-dark border-dark py-2">Inbound HUB</th>
-                                <th colspan="2" class="col-outbound text-dark border-dark py-2">Outbound Isotank</th>
-                                <th rowspan="2" class="col-selisih align-middle text-dark">Selisih (qty kg)</th>
+                            <tr>
+                                <th rowspan="2" class="align-middle" style="min-width: 150px;">Vendor</th>
+                                <th rowspan="2" class="align-middle">Forecast</th>
+                                <th rowspan="2" class="align-middle">Qty PO</th>
+                                <th colspan="2" class="col-onsite border-dark py-2">Yg Sudah Inbound / Onsite</th>
+                                <th colspan="2" class="col-koe border-dark py-2">Inbound KOE</th>
+                                <th colspan="2" class="col-hub border-dark py-2">Inbound HUB</th>
+                                <th colspan="2" class="col-outbound border-dark py-2">Outbound Isotank</th>
+                                <th rowspan="2" class="col-selisih align-middle">Selisih (qty kg)</th>
                             </tr>
-                            <tr class="table-dark">
-                                <th class="col-onsite text-dark border-dark">Qty Isotank</th>
-                                <th class="col-onsite text-dark border-dark">Qty kg</th>
-                                <th class="col-koe text-dark border-dark">Qty Isotank</th>
-                                <th class="col-koe text-dark border-dark">Qty kg</th>
-                                <th class="col-hub text-dark border-dark">Qty Isotank</th>
-                                <th class="col-hub text-dark border-dark">Qty kg</th>
-                                <th class="col-outbound text-dark border-dark">KOE</th>
-                                <th class="col-outbound text-dark border-dark">HUB</th>
+                            <tr>
+                                <th class="col-onsite border-dark py-1">Qty Isotank</th>
+                                <th class="col-onsite border-dark py-1">Qty kg</th>
+                                <th class="col-koe border-dark py-1">Qty Isotank</th>
+                                <th class="col-koe border-dark py-1">Qty kg</th>
+                                <th class="col-hub border-dark py-1">Qty Isotank</th>
+                                <th class="col-hub border-dark py-1">Qty kg</th>
+                                <th class="col-outbound border-dark py-1">KOE</th>
+                                <th class="col-outbound border-dark py-1">HUB</th>
                             </tr>
                         </thead>
                         <tbody id="vendorSummaryTableBody">
@@ -395,7 +393,6 @@
                 </div>
             </div>
         </div>
-        <!-- Kolom Tanggal Empty ditambahkan sebelum kolom Action, ditambahkan kolom Status PO -->
         <div class="table-responsive shadow-sm rounded-3">
             <table class="table table-custom table-hover align-middle m-0">
                 <thead>
@@ -467,7 +464,7 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-custom text-center align-middle m-0" style="font-size: 0.85rem;">
-                    <thead class="table-dark">
+                    <thead>
                         <tr>
                             <th rowspan="2" class="align-middle">Area Lapangan</th>
                             <th colspan="2" class="bg-primary text-white border-dark">Qty by System</th>
@@ -532,7 +529,7 @@
         </div>
     </div>
 
-    <!-- PAGE: UTILIZATION -->
+    <!-- PAGE: UTILIZATION REPORT -->
     <div id="page-utilization" class="page-content">
         <div class="row g-4">
             <div class="col-md-6"><div class="chart-container"><h6 class="fw-bold mb-3">Inventory Utilization (Full vs Empty)</h6><canvas id="utilChart"></canvas></div></div>
@@ -540,7 +537,7 @@
         </div>
     </div>
 
-    <!-- PAGE: LOG AKTIVITAS (HALAMAN AUDIT LOGGER) -->
+    <!-- PAGE: LOG AKTIVITAS -->
     <div id="page-activity" class="page-content">
         <div class="card kpi-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -622,7 +619,7 @@
                                         <option value="Maintenance">Maintenance</option>
                                         <option value="Tidak Aktif / Stop Refill">Tidak Aktif / Stop Refill ⚪</option>
                                     </select>
-                                </div>
+                                end</div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label small fw-bold text-danger">Status PO</label>
                                     <select id="poStatus" class="form-select border-danger">
@@ -737,28 +734,18 @@
                             <i class="fas fa-plus me-1"></i> Input Siklus Lama
                         </button>
 
-                        <!-- FORM INPUT RIWAYAT SIKLUS MANUAL -->
+                        <!-- FORM INPUT RIWAYAT SIKLUS MANUAL - TANPA INPUT CARGO & SUPPLIER KARENA OTOMATIS mewarisi data utama -->
                         <div id="addHistoryForm" class="card p-3 border-0 shadow-sm mb-3 bg-light" style="display:none; border-left: 4px solid var(--info) !important;">
                             <h6 class="fw-bold mb-3 text-info"><i class="fas fa-calendar-plus me-1"></i> Catat Siklus Perjalanan Masa Lalu</h6>
                             <div class="row g-2 mb-2">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="small fw-bold">Nomor PO</label>
                                     <input type="text" id="histPo" class="form-control form-control-sm" placeholder="Contoh: 97576">
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="small fw-bold">Muatan</label>
-                                    <input type="text" id="histCargo" class="form-control form-control-sm" placeholder="Contoh: ACID">
-                                </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="small fw-bold text-success">Berat (kg)</label>
                                     <input type="number" id="histWeight" class="form-control form-control-sm border-success" placeholder="Contoh: 30000" min="0">
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="small fw-bold">Supplier</label>
-                                    <input type="text" id="histSupplier" class="form-control form-control-sm" placeholder="Contoh: DWI101IDR">
-                                </div>
-                            </div>
-                            <div class="row g-2 mb-2">
                                 <div class="col-md-4">
                                     <label class="small fw-bold text-danger">Status PS (Deduct)</label>
                                     <select id="histPsStatus" class="form-select form-select-sm border-danger">
@@ -767,11 +754,13 @@
                                         <option value="Done Issued">Done Issued</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
                                     <label class="small fw-bold text-danger">Nomor PS</label>
                                     <input type="text" id="histPsNo" class="form-control form-control-sm border-danger" placeholder="Contoh: PS-97576">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="small fw-bold text-danger">Qty PS (kg)</label>
                                     <input type="number" id="histPsQty" class="form-control form-control-sm border-danger" placeholder="Contoh: 30000" min="0">
                                 </div>
@@ -981,19 +970,20 @@
     </div>
 </div>
 
-<!-- --- MODAL CUSTOM ALERT (PENGGANTI NATIVE ALERT YANG TERPROTEKSI CSP) --- -->
-<div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+<!-- --- MODAL CUSTOM CONFIRM (PENGGANTI NATIVE CONFIRM YANG TERPROTEKSI CSP) --- -->
+<div class="modal fade" id="customConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
     <div class="modal-dialog">
         <div class="modal-content" style="border-radius:12px;">
-            <div class="modal-header bg-danger text-white" id="customAlertHeader">
-                <h5 class="modal-title fw-bold" id="customAlertTitle"><i class="fas fa-exclamation-triangle me-2"></i> Peringatan</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold"><i class="fas fa-question-circle me-2"></i> Konfirmasi Tindakan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="customAlertMessage">
-                Pesan sistem.
+            <div class="modal-body" id="customConfirmMessage">
+                Apakah Anda yakin ingin melakukan tindakan ini?
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger fw-bold" id="customConfirmBtn">Ya, Lanjutkan</button>
             </div>
         </div>
     </div>
@@ -1067,24 +1057,25 @@
     let vConfigModal = null;
     let sysBaseModalObj = null;
 
-    // --- FUNSI CUSTOM ALERT ---
-    function showCustomAlert(msg, title = "Peringatan", isError = true) {
-        const modalEl = document.getElementById('customAlertModal');
+    // --- PROYEKSI CUSTOM CONFIRM MODAL (SINKRON DENGAN PANDUAN UTAMA) ---
+    let confirmModalObj = null;
+    function showCustomConfirm(msg, onConfirm) {
+        const modalEl = document.getElementById('customConfirmModal');
         if (!modalEl) return;
-        document.getElementById('customAlertMessage').innerText = msg;
-        const header = document.getElementById('customAlertHeader');
-        const titleEl = document.getElementById('customAlertTitle');
-        if (header && titleEl) {
-            if (isError) {
-                header.className = "modal-header bg-danger text-white";
-                titleEl.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${title}`;
-            } else {
-                header.className = "modal-header bg-success text-white";
-                titleEl.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${title}`;
-            }
-        }
-        const modal = new bootstrap.Modal(modalEl);
-        modal.show();
+        document.getElementById('customConfirmMessage').innerText = msg;
+        const confirmBtn = document.getElementById('customConfirmBtn');
+        
+        // Gandakan elemen tombol konfirmasi untuk mereset seluruh event listeners lama
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.addEventListener('click', () => {
+            if (confirmModalObj) confirmModalObj.hide();
+            onConfirm();
+        });
+        
+        confirmModalObj = new bootstrap.Modal(modalEl);
+        confirmModalObj.show();
     }
 
     // --- FUNSI AUDIT LOGGER LAPANGAN ---
@@ -1121,11 +1112,11 @@
     }
 
     function clearActivityLogs() {
-        if(confirm("Apakah Anda yakin ingin menghapus seluruh log audit aktivitas operasional?")) {
+        showCustomConfirm("Apakah Anda yakin ingin menghapus seluruh log audit aktivitas operasional?", () => {
             activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "CLEAR", desc: "User membersihkan seluruh log audit riwayat operasional." }];
             localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
             renderActivityLog();
-        }
+        });
     }
 
     // --- FITUR CADANGAN DAN VERIFIKASI PEMULIHAN DATABASE (BACKUP & RESTORE JSON) ---
@@ -1140,7 +1131,6 @@
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
         downloadAnchor.setAttribute("download", `Backup_Dashboard_Isotank_${new Date().toISOString().slice(0, 10)}.json`);
-        document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
         
@@ -1184,6 +1174,27 @@
             }
         };
         reader.readAsText(file);
+    }
+
+    // --- FUNGSI RESET DATABASE ---
+    function resetDatabase() {
+        showCustomConfirm("Apakah Anda yakin ingin mengatur ulang database ke kondisi simulasi awal? Semua data input manual Anda saat ini akan ditimpa.", () => {
+            localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
+            masterData = JSON.parse(localStorage.getItem('advancedLogisticData'));
+            
+            localStorage.removeItem('siteSystemBaselines');
+            systemBaselines = null;
+
+            activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "RESET", desc: "Database diatur ulang secara paksa ke kondisi simulasi awal." }];
+            localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+
+            renderTable();
+            if(document.getElementById('page-stocktake').classList.contains('active')) {
+                renderStockTakeTable();
+            }
+            renderActivityLog();
+            initCharts();
+        });
     }
 
     // --- MANAJEMEN PINDAH HALAMAN (TAB NAVIGATION) ---
@@ -1352,6 +1363,119 @@
                 </tr>
             `;
         });
+    }
+
+    // --- MODAL CONFIG TARGET VENDOR ---
+    function openVendorConfigModal() {
+        const modalEl = document.getElementById('vendorConfigModal');
+        vConfigModal = new bootstrap.Modal(modalEl);
+        vConfigModal.show();
+    }
+
+    function saveVendorConfig() {
+        const vendor = document.getElementById('configVendorName').value;
+        const forecast = parseInt(document.getElementById('configForecast').value) || 0;
+        const qtyPo = parseInt(document.getElementById('configQtyPo').value) || 0;
+
+        vendorConfigs[vendor] = { forecast, qtyPo };
+        localStorage.setItem('vendorConfigs', JSON.stringify(vendorConfigs));
+
+        if (vConfigModal) {
+            vConfigModal.hide();
+        }
+        
+        logActivity("SYSTEM", "CONFIG", `Target Forecast/PO untuk vendor ${vendor} disesuaikan secara manual.`);
+        renderVendorSummary();
+    }
+
+    // --- MODAL CONFIG SYSTEM BASELINE ---
+    function openSystemBaselineModal() {
+        if (systemBaselines) {
+            document.getElementById('baseWarehouseQty').value = systemBaselines.warehouseQty || 0;
+            document.getElementById('baseWarehouseKg').value = systemBaselines.warehouseKg || 0;
+            document.getElementById('baseWarehouseFullQty').value = systemBaselines.warehouseFullQty || 0;
+            document.getElementById('baseWarehouseFullKg').value = systemBaselines.warehouseFullKg || 0;
+            document.getElementById('baseK25Qty').value = systemBaselines.k25Qty || 0;
+            document.getElementById('baseK25Kg').value = systemBaselines.k25Kg || 0;
+            document.getElementById('baseK25FullQty').value = systemBaselines.k25FullQty || 0;
+            document.getElementById('baseK25FullKg').value = systemBaselines.k25FullKg || 0;
+        } else {
+            let autoSystemWarehouseQty = 0;
+            let autoSystemWarehouseKg = 0;
+            let autoSystemWarehouseFullQty = 0;
+            let autoSystemWarehouseFullKg = 0;
+            let autoSystemK25Qty = 0;
+            let autoSystemK25Kg = 0;
+            let autoSystemK25FullQty = 0;
+            let autoSystemK25FullKg = 0;
+
+            masterData.forEach(item => {
+                const trackingPosStr = item.trackingPos || '';
+                const weightVal = parseFloat(item.weightKg) || 0;
+                const statusStr = item.status || '';
+                const isFull = statusStr.includes('Full') || statusStr.includes('Terinstal');
+
+                if (trackingPosStr === 'Warehouse') {
+                    autoSystemWarehouseQty++;
+                    autoSystemWarehouseKg += weightVal;
+                    if (isFull) {
+                        autoSystemWarehouseFullQty++;
+                        autoSystemWarehouseFullKg += weightVal;
+                    }
+                } else if (trackingPosStr === '25KT') {
+                    autoSystemK25Qty++;
+                    autoSystemK25Kg += weightVal;
+                    if (isFull) {
+                        autoSystemK25FullQty++;
+                        autoSystemK25FullKg += weightVal;
+                    }
+                }
+            });
+
+            document.getElementById('baseWarehouseQty').value = autoSystemWarehouseQty;
+            document.getElementById('baseWarehouseKg').value = autoSystemWarehouseKg;
+            document.getElementById('baseWarehouseFullQty').value = autoSystemWarehouseFullQty;
+            document.getElementById('baseWarehouseFullKg').value = autoSystemWarehouseFullKg;
+            document.getElementById('baseK25Qty').value = autoSystemK25Qty;
+            document.getElementById('baseK25Kg').value = autoSystemK25Kg;
+            document.getElementById('baseK25FullQty').value = autoSystemK25FullQty;
+            document.getElementById('baseK25FullKg').value = autoSystemK25FullKg;
+        }
+
+        const modalEl = document.getElementById('systemBaselineModal');
+        sysBaseModalObj = new bootstrap.Modal(modalEl);
+        sysBaseModalObj.show();
+    }
+
+    function saveSystemBaseline() {
+        const wQty = parseInt(document.getElementById('baseWarehouseQty').value) || 0;
+        const wKg = parseFloat(document.getElementById('baseWarehouseKg').value) || 0;
+        const wFullQty = parseInt(document.getElementById('baseWarehouseFullQty').value) || 0;
+        const wFullKg = parseFloat(document.getElementById('baseWarehouseFullKg').value) || 0;
+        const kQty = parseInt(document.getElementById('baseK25Qty').value) || 0;
+        const kKg = parseFloat(document.getElementById('baseK25Kg').value) || 0;
+        const kFullQty = parseInt(document.getElementById('baseK25FullQty').value) || 0;
+        const kFullKg = parseFloat(document.getElementById('baseK25FullKg').value) || 0;
+
+        systemBaselines = {
+            warehouseQty: wQty,
+            warehouseKg: wKg,
+            warehouseFullQty: wFullQty,
+            warehouseFullKg: wFullKg,
+            k25Qty: kQty,
+            k25Kg: kKg,
+            k25FullQty: kFullQty,
+            k25FullKg: kFullKg
+        };
+
+        localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
+
+        if (sysBaseModalObj) {
+            sysBaseModalObj.hide();
+        }
+
+        logActivity("SYSTEM", "CONFIG", `Manual Baseline Data System disesuaikan: WH (${wQty} Isotank / ${wKg} kg), Terisi (${wFullQty} Isotank / ${wFullKg} kg); 25KT (${kQty} Isotank / ${kKg} kg), Terinstal (${kFullQty} Isotank / ${kFullKg} kg).`);
+        renderStockTakeTable();
     }
 
     // --- RENDERING TABEL UTAMA (SHIPMENT TRACKING) - DENGAN CRASH GUARD ---
@@ -1715,15 +1839,38 @@
         let finalSystemWarehouseFullQty = systemBaselines ? systemBaselines.warehouseFullQty : autoSystemFullCounts.warehouse;
         let finalSystemWarehouseFullKg = systemBaselines ? systemBaselines.warehouseFullKg : autoSystemFullKg.warehouse;
 
+        // Hitung system baseline kosong (Empty = Total - Full)
+        let finalSystemWarehouseEmptyQty = finalSystemWarehouseQty - finalSystemWarehouseFullQty;
+        let finalSystemWarehouseEmptyKg = finalSystemWarehouseKg - finalSystemWarehouseFullKg;
+
         let finalSystemK25Qty = systemBaselines ? systemBaselines.k25Qty : autoSystemCounts.k25;
         let finalSystemK25Kg = systemBaselines ? systemBaselines.k25Kg : autoSystemKg.k25;
         let finalSystemK25FullQty = systemBaselines ? systemBaselines.k25FullQty : autoSystemFullCounts.k25;
         let finalSystemK25FullKg = systemBaselines ? systemBaselines.k25FullKg : autoSystemFullKg.k25;
 
+        // Hitung system baseline kosong 25KT
+        let finalSystemK25EmptyQty = finalSystemK25Qty - finalSystemK25FullQty;
+        let finalSystemK25EmptyKg = finalSystemK25Kg - finalSystemK25FullKg;
+
         let finalSystemTotalQty = finalSystemWarehouseQty + finalSystemK25Qty;
-        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg; // FIXED: Typo diperbaiki dari finalSystemK25K
+        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg;
         let finalSystemTotalFullQty = finalSystemWarehouseFullQty + finalSystemK25FullQty;
-        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg; // FIXED: Typo diperbaiki dari finalSystemFullKg
+        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg;
+        
+        let finalSystemTotalEmptyQty = finalSystemWarehouseEmptyQty + finalSystemK25EmptyQty;
+        let finalSystemTotalEmptyKg = finalSystemWarehouseEmptyKg + finalSystemK25EmptyKg;
+
+        // Hitung real empty (Fisik Sesuai Match dan berstatus Kosong)
+        let realEmptyCounts = {
+            warehouse: realCounts.warehouse - realFullCounts.warehouse,
+            k25: realCounts.k25 - realFullCounts.k25,
+            total: realCounts.total - realFullCounts.total
+        };
+        let realEmptyKg = {
+            warehouse: realKg.warehouse - realFullKg.warehouse,
+            k25: realKg.k25 - realFullKg.k25,
+            total: realKg.total - realFullKg.total
+        };
 
         // Hubungkan data perhitungan ke komponen KPI Card Weekly Stock Take (Menampilkan Unit & Kg)
         const kpiSiteUnitsEl = document.getElementById('kpi-site-units');
@@ -1755,23 +1902,29 @@
             kpiStTodoEl.innerText = `${stTodoCount} Isotank`;
         }
 
-        // Render data baris ke dalam Tabel Rekonsiliasi Lapangan (Unit & Kg)
+        // Render data baris ke dalam Tabel Rekonsiliasi Lapangan (Unit & Kg) - MENAMPILKAN BARIS KHUSUS EMPTY/KOSONG
         const reconTbody = document.getElementById('reconciliationTableBody');
         if (reconTbody) {
             const diffWarehouseQty = finalSystemWarehouseQty - realCounts.warehouse;
             const diffWarehouseKg = finalSystemWarehouseKg - realKg.warehouse;
             const diffWarehouseFullQty = finalSystemWarehouseFullQty - realFullCounts.warehouse;
             const diffWarehouseFullKg = finalSystemWarehouseFullKg - realFullKg.warehouse;
+            const diffWarehouseEmptyQty = finalSystemWarehouseEmptyQty - realEmptyCounts.warehouse;
+            const diffWarehouseEmptyKg = finalSystemWarehouseEmptyKg - realEmptyKg.warehouse;
 
             const diffK25Qty = finalSystemK25Qty - realCounts.k25;
             const diffK25Kg = finalSystemK25Kg - realKg.k25;
             const diffK25FullQty = finalSystemK25FullQty - realFullCounts.k25;
             const diffK25FullKg = finalSystemK25FullKg - realFullKg.k25;
+            const diffK25EmptyQty = finalSystemK25EmptyQty - realEmptyCounts.k25;
+            const diffK25EmptyKg = finalSystemK25EmptyKg - realEmptyKg.k25;
 
             const diffTotalQty = finalSystemTotalQty - realCounts.total;
             const diffTotalKg = finalSystemTotalKg - realKg.total;
             const diffTotalFullQty = finalSystemTotalFullQty - realFullCounts.total;
             const diffTotalFullKg = finalSystemTotalFullKg - realFullKg.total;
+            const diffTotalEmptyQty = finalSystemTotalEmptyQty - realEmptyCounts.total;
+            const diffTotalEmptyKg = finalSystemTotalEmptyKg - realEmptyKg.total;
 
             const formatNum = (num) => num === 0 ? '0' : num.toLocaleString('id-ID');
             const formatDiff = (num) => {
@@ -1787,7 +1940,7 @@
 
             reconTbody.innerHTML = `
                 <!-- AREA WAREHOUSE -->
-                <tr class="fw-bold bg-light">
+                <tr class="fw-bold" style="background-color: #f1f5f9;">
                     <td class="text-start">Warehouse (Total Isotank)</td>
                     <td>${finalSystemWarehouseQty} Unit</td>
                     <td>${formatNum(finalSystemWarehouseKg)} kg</td>
@@ -1796,7 +1949,7 @@
                     <td class="${diffWarehouseQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffWarehouseQty)} Unit</td>
                     <td class="${diffWarehouseKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffWarehouseKg)} kg</td>
                 </tr>
-                <tr class="table-light">
+                <tr>
                     <td class="text-start ps-4 text-muted"><i class="fas fa-caret-right me-1"></i> Warehouse (Terisi/Full Only)</td>
                     <td>${finalSystemWarehouseFullQty} Unit</td>
                     <td>${formatNum(finalSystemWarehouseFullKg)} kg</td>
@@ -1805,9 +1958,19 @@
                     <td class="${diffWarehouseFullQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffWarehouseFullQty)} Unit</td>
                     <td class="${diffWarehouseFullKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffWarehouseFullKg)} kg</td>
                 </tr>
+                <!-- BARIS BARU: WAREHOUSE EMPTY -->
+                <tr>
+                    <td class="text-start ps-4 text-muted"><i class="fas fa-caret-right me-1"></i> Warehouse (Kosong/Empty Only)</td>
+                    <td>${finalSystemWarehouseEmptyQty} Unit</td>
+                    <td>${formatNum(finalSystemWarehouseEmptyKg)} kg</td>
+                    <td>${realEmptyCounts.warehouse} Unit</td>
+                    <td>${formatNum(realEmptyKg.warehouse)} kg</td>
+                    <td class="${diffWarehouseEmptyQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffWarehouseEmptyQty)} Unit</td>
+                    <td class="${diffWarehouseEmptyKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffWarehouseEmptyKg)} kg</td>
+                </tr>
 
                 <!-- AREA 25KT -->
-                <tr class="fw-bold bg-light border-top">
+                <tr class="fw-bold border-top" style="background-color: #f1f5f9;">
                     <td class="text-start">25KT (Total Isotank)</td>
                     <td>${finalSystemK25Qty} Unit</td>
                     <td>${formatNum(finalSystemK25Kg)} kg</td>
@@ -1816,7 +1979,7 @@
                     <td class="${diffK25Qty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffK25Qty)} Unit</td>
                     <td class="${diffK25Kg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffK25Kg)} kg</td>
                 </tr>
-                <tr class="table-light">
+                <tr>
                     <td class="text-start ps-4 text-muted"><i class="fas fa-caret-right me-1"></i> 25KT (Terinstal/Full Only)</td>
                     <td>${finalSystemK25FullQty} Unit</td>
                     <td>${formatNum(finalSystemK25FullKg)} kg</td>
@@ -1824,6 +1987,16 @@
                     <td>${formatNum(realFullKg.k25)} kg</td>
                     <td class="${diffK25FullQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffK25FullQty)} Unit</td>
                     <td class="${diffK25FullKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffK25FullKg)} kg</td>
+                </tr>
+                <!-- BARIS BARU: 25KT EMPTY -->
+                <tr>
+                    <td class="text-start ps-4 text-muted"><i class="fas fa-caret-right me-1"></i> 25KT (Kosong/Empty Only)</td>
+                    <td>${finalSystemK25EmptyQty} Unit</td>
+                    <td>${formatNum(finalSystemK25EmptyKg)} kg</td>
+                    <td>${realEmptyCounts.k25} Unit</td>
+                    <td>${formatNum(realEmptyKg.k25)} kg</td>
+                    <td class="${diffK25EmptyQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffK25EmptyQty)} Unit</td>
+                    <td class="${diffK25EmptyKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffK25EmptyKg)} kg</td>
                 </tr>
 
                 <!-- REKONSILIASI TOTAL SITE -->
@@ -1844,6 +2017,16 @@
                     <td>${formatNum(realFullKg.total)} kg</td>
                     <td class="${diffTotalFullQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffTotalFullQty)} Unit</td>
                     <td class="${diffTotalFullKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffTotalFullKg)} kg</td>
+                </tr>
+                <!-- BARIS BARU: TOTAL SITE EMPTY -->
+                <tr class="fw-bold text-dark" style="background-color: #fef08a;">
+                    <td class="text-start text-uppercase">TOTAL SITE (Kosong/Empty Only)</td>
+                    <td>${finalSystemTotalEmptyQty} Unit</td>
+                    <td>${formatNum(finalSystemTotalEmptyKg)} kg</td>
+                    <td>${realEmptyCounts.total} Unit</td>
+                    <td>${formatNum(realEmptyKg.total)} kg</td>
+                    <td class="${diffTotalEmptyQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffTotalEmptyQty)} Unit</td>
+                    <td class="${diffTotalEmptyKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffTotalEmptyKg)} kg</td>
                 </tr>
             `;
         }
@@ -1979,14 +2162,10 @@
         if(show) {
             form.style.display = 'block';
             document.getElementById('histPo').value = '';
-            document.getElementById('histCargo').value = '';
             document.getElementById('histWeight').value = '';
             document.getElementById('histPsStatus').value = 'N/A';
             document.getElementById('histPsNo').value = '';
             document.getElementById('histPsQty').value = '';
-            document.getElementById('histSupplier').value = '';
-            document.getElementById('histOut').value = '';
-            document.getElementById('histIn').value = '';
         } else {
             form.style.display = 'none';
         }
@@ -2008,6 +2187,8 @@
         sortedHistory.forEach((hist, index) => {
             const histWeight = hist.weightKg ? parseFloat(hist.weightKg).toLocaleString('id-ID') : '-';
             const histPsStatus = hist.psStatus || 'N/A';
+            const histCargo = hist.cargo || (item.cargo || 'Methanol'); // Inherit otomatis dari data utama
+            const histSupplier = getStandardVendorName(hist.supplier || item.supplier); // Inherit otomatis dari data utama
             
             let histPsBadge = '<span class="badge bg-light text-muted border-0">N/A</span>';
             if (histPsStatus === 'Belum Issued') {
@@ -2025,10 +2206,10 @@
 
             tbody.innerHTML += `<tr>
                 <td><strong class="text-danger">${hist.po || '-'}</strong></td>
-                <td>${hist.cargo || '-'}</td>
+                <td>${histCargo}</td>
                 <td><span class="text-success fw-bold">${histWeight} kg</span></td>
                 <td>${histPsDetails}</td>
-                <td>${hist.supplier || '-'}</td>
+                <td>${histSupplier}</td>
                 <td>${cleanDateDisplay(hist.outbound)}</td>
                 <td>${cleanDateDisplay(hist.inbound)}</td>
                 <td class="text-center">
@@ -2062,8 +2243,6 @@
 
     function saveNewHistoryItem() {
         const po = document.getElementById('histPo').value.toUpperCase().trim();
-        const cargo = document.getElementById('histCargo').value.trim();
-        const supplier = document.getElementById('histSupplier').value.trim();
         const weight = parseFloat(document.getElementById('histWeight').value) || 0;
         const psStatus = document.getElementById('histPsStatus').value;
         const psNo = document.getElementById('histPsNo').value.toUpperCase().trim();
@@ -2078,11 +2257,17 @@
 
         const itemIndex = masterData.findIndex(u => u.id === currentHistoryUnitId);
         if(itemIndex >= 0) {
-            if(!masterData[itemIndex].history) {
-                masterData[itemIndex].history = [];
+            const activeIsotank = masterData[itemIndex];
+            
+            // Otomatis inherit Muatan dan Supplier dari data aktif Isotank tersebut
+            const cargo = activeIsotank.cargo || "Methanol";
+            const supplier = activeIsotank.supplier || "-";
+
+            if(!activeIsotank.history) {
+                activeIsotank.history = [];
             }
             
-            masterData[itemIndex].history.push({
+            activeIsotank.history.push({
                 po: po,
                 cargo: cargo,
                 weightKg: weight,
@@ -2094,7 +2279,7 @@
                 inbound: inbound
             });
 
-            masterData[itemIndex].rotations = masterData[itemIndex].history.length;
+            activeIsotank.rotations = activeIsotank.history.length;
 
             localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
             toggleAddHistoryForm(false);
@@ -2105,7 +2290,7 @@
     }
 
     function deleteHistoryItem(index) {
-        if(confirm("Apakah Anda yakin ingin menghapus catatan siklus riwayat ini?")) {
+        showCustomConfirm("Apakah Anda yakin ingin menghapus catatan siklus riwayat ini?", () => {
             const itemIndex = masterData.findIndex(u => u.id === currentHistoryUnitId);
             if(itemIndex >= 0 && masterData[itemIndex].history) {
                 const deletedPo = masterData[itemIndex].history[index].po;
@@ -2117,7 +2302,7 @@
                 
                 logActivity(currentHistoryUnitId, "EDIT", `Catatan riwayat siklus dengan nomor PO ${deletedPo} dihapus.`);
             }
-        }
+        });
     }
 
     function handleStatusChange() {
