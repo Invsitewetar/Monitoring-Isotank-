@@ -181,6 +181,14 @@
         .table-custom { background: white; border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
         .table-custom thead { background-color: #f1f5f9; border-bottom: 2px solid #e2e8f0; color: #334155; }
         
+        /* Custom Table Header Text Color Forcing */
+        .table-custom thead tr th {
+            color: #334155; /* Default Dark Gray */
+        }
+        .table-custom thead tr.table-dark th {
+            color: #ffffff !important; /* Force readable White Text for Dark Table Rows */
+        }
+
         /* Alert Section styles */
         .alert-urgent { border-left: 5px solid var(--critical); background: #fef2f2; }
 
@@ -302,13 +310,14 @@
                     <table class="table table-bordered table-custom align-middle text-center m-0" style="font-size: 0.8rem;">
                         <thead>
                             <tr class="table-dark">
-                                <th rowspan="2" class="align-middle" style="min-width: 150px; color: #000000 !important;">Vendor</th>
-                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Forecast</th>
-                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Qty PO</th>
-                                <th colspan="2" class="col-onsite border-dark py-2">Yg Sudah Inbound / Onsite</th>
-                                <th colspan="2" class="col-koe border-dark py-2">Inbound KOE</th>
-                                <th colspan="2" class="col-hub border-dark py-2">Inbound HUB</th>
-                                <th colspan="2" class="col-outbound border-dark py-2">Outbound Isotank</th>
+                                <!-- UPDATED: Text Vendor, Forecast, Qty PO di bawah diubah menjadi warna putih pekat (#ffffff) -->
+                                <th rowspan="2" class="align-middle" style="min-width: 150px; color: #ffffff !important;">Vendor</th>
+                                <th rowspan="2" class="align-middle" style="color: #ffffff !important;">Forecast</th>
+                                <th rowspan="2" class="align-middle" style="color: #ffffff !important;">Qty PO</th>
+                                <th colspan="2" class="col-onsite text-dark border-dark py-2">Yg Sudah Inbound / Onsite</th>
+                                <th colspan="2" class="col-koe text-dark border-dark py-2">Inbound KOE</th>
+                                <th colspan="2" class="col-hub text-dark border-dark py-2">Inbound HUB</th>
+                                <th colspan="2" class="col-outbound text-dark border-dark py-2">Outbound Isotank</th>
                                 <th rowspan="2" class="col-selisih align-middle text-dark">Selisih (qty kg)</th>
                             </tr>
                             <tr class="table-dark">
@@ -994,34 +1003,26 @@
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     // --- INITIAL DATASET ---
-    // Diperbarui dengan status, nomor, qty PS bawaan, serta unit kosong dengan psStatus "Belum Issued"
     const initialDataset = [
-        { id: "SJIU2322090", poNumber: "99616", poStatus: "Normal", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "NTTU1753699", poNumber: "99617", poStatus: "Normal", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322001", poNumber: "99618", poStatus: "Normal", cargo: "Methanol", weightKg: 35200, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221541", poNumber: "99619", poStatus: "Normal", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221710", poNumber: "99620", poStatus: "Normal", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2221536", poNumber: "99622", poStatus: "Normal", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        
-        // Unit yang Anda cari di Screenshot
-        { id: "DJEU0303868", poNumber: "99997", poStatus: "Normal", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        
-        { id: "SJIU2221705", poNumber: "99998", poStatus: "Normal", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [
+        { id: "SJIU2322090", type: "Isotank", poNumber: "99616", poStatus: "Normal", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "NTTU1753699", type: "Isotank", poNumber: "99617", poStatus: "Normal", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2322001", type: "Isotank", poNumber: "99618", poStatus: "Normal", cargo: "Methanol", weightKg: 35200, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2221541", type: "Isotank", poNumber: "99619", poStatus: "Normal", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2221710", type: "Isotank", poNumber: "99620", poStatus: "Normal", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2221536", type: "Isotank", poNumber: "99622", poStatus: "Normal", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "DJEU0303868", type: "Isotank", poNumber: "99997", poStatus: "Normal", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2221705", type: "Isotank", poNumber: "99998", poStatus: "Normal", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [
             { po: "90001", cargo: "Methanol", weightKg: 34800, supplier: "DWIJAYA", outbound: "2026-01-10", inbound: "2026-04-05", psStatus: "Done Issued", psNumber: "PS-90001", psQty: 34800 }
         ] },
-        { id: "NTTU1753750", poNumber: "99999", poStatus: "Normal", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322043", poNumber: "100000", poStatus: "Normal", cargo: "Methanol", weightKg: 35150, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "NTTU1753765", poNumber: "100001", poStatus: "Normal", cargo: "Methanol", weightKg: 35250, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322059", poNumber: "100002", poStatus: "Normal", cargo: "Methanol", weightKg: 34880, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2322064", poNumber: "100003", poStatus: "Normal", cargo: "Methanol", weightKg: 34970, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "SJIU2001275", poNumber: "100004", poStatus: "Normal", cargo: "Methanol", weightKg: 35050, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        
-        // Unit yang Onsite di Lapangan
-        { id: "SJIU2221691", poNumber: "99615", poStatus: "Normal", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        { id: "NTTU1753690", poNumber: "99614", poStatus: "Normal", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
-        
-        // Unit Kosong Baru yang BELUM di-issued dokumen PS-nya, memiliki data simulasi perubahan nomor seri fisik lama
-        { id: "DJEU0303641", poNumber: "97576", poStatus: "Normal", cargo: "Empty", weightKg: 0, status: "Standby (Kosong)", trackingPos: "Warehouse", supplier: "DWI101IDR", dateOutbound: "", dateInboundSite: "2026-06-01", rotations: 5, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Fisik kosong, PS Belum Issued.", psStatus: "Belum Issued", psNumber: "PS-97576", psQty: 33600, dateEmpty: "2026-06-01", idChanges: [{ oldId: "DJEU0303600", newId: "DJEU0303641", dateChanged: "2026-05-10 14:32:01" }], history: [] }
+        { id: "NTTU1753750", type: "Isotank", poNumber: "99999", poStatus: "Normal", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2322043", type: "Isotank", poNumber: "100000", poStatus: "Normal", cargo: "Methanol", weightKg: 35150, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "NTTU1753765", type: "Isotank", poNumber: "100001", poStatus: "Normal", cargo: "Methanol", weightKg: 35250, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2322059", type: "Isotank", poNumber: "100002", poStatus: "Normal", cargo: "Methanol", weightKg: 34880, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2322064", type: "Isotank", poNumber: "100003", poStatus: "Normal", cargo: "Methanol", weightKg: 34970, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2001275", type: "Isotank", poNumber: "100004", poStatus: "Normal", cargo: "Methanol", weightKg: 35050, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "SJIU2221691", type: "Isotank", poNumber: "99615", poStatus: "Normal", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "NTTU1753690", type: "Isotank", poNumber: "99614", poStatus: "Normal", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", idChanges: [], history: [] },
+        { id: "DJEU0303641", type: "Isotank", poNumber: "97576", poStatus: "Normal", cargo: "Empty", weightKg: 0, status: "Standby (Kosong)", trackingPos: "Warehouse", supplier: "DWI101IDR", dateOutbound: "", dateInboundSite: "2026-06-01", rotations: 5, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Fisik kosong, PS Belum Issued.", psStatus: "Belum Issued", psNumber: "PS-97576", psQty: 33600, dateEmpty: "2026-06-01", idChanges: [{ oldId: "DJEU0303600", newId: "DJEU0303641", dateChanged: "2026-05-10 14:32:01" }], history: [] }
     ];
 
     // Mengambil log aktivitas audit lapangan dari memori lokal
@@ -1034,6 +1035,15 @@
     }
 
     let masterData = JSON.parse(localStorage.getItem('advancedLogisticData')) || [];
+    
+    // --- INTEGRASI STRUKTUR MIGRASI DATA SINKRON OTOMATIS ---
+    masterData = masterData.map(item => {
+        if (!item.type) {
+            item.type = "Isotank";
+        }
+        return item;
+    });
+    localStorage.setItem('advancedLogisticData', JSON.stringify(masterData));
     
     // Database target contract khusus vendor
     let vendorConfigs = JSON.parse(localStorage.getItem('vendorConfigs')) || {
@@ -1174,27 +1184,6 @@
             }
         };
         reader.readAsText(file);
-    }
-
-    // --- FUNGSI RESET DATABASE ---
-    function resetDatabase() {
-        if(confirm("Apakah Anda yakin ingin mengatur ulang database ke kondisi simulasi awal? Semua data input manual Anda saat ini akan ditimpa.")) {
-            localStorage.setItem('advancedLogisticData', JSON.stringify(initialDataset));
-            masterData = JSON.parse(localStorage.getItem('advancedLogisticData'));
-            
-            localStorage.removeItem('siteSystemBaselines');
-            systemBaselines = null;
-
-            activityLogs = [{ timestamp: new Date().toLocaleTimeString('id-ID'), unitId: "SYSTEM", actionType: "RESET", desc: "Database diatur ulang secara paksa ke kondisi simulasi awal." }];
-            localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
-
-            renderTable();
-            if(document.getElementById('page-stocktake').classList.contains('active')) {
-                renderStockTakeTable();
-            }
-            renderActivityLog();
-            initCharts();
-        }
     }
 
     // --- MANAJEMEN PINDAH HALAMAN (TAB NAVIGATION) ---
@@ -1732,9 +1721,9 @@
         let finalSystemK25FullKg = systemBaselines ? systemBaselines.k25FullKg : autoSystemFullKg.k25;
 
         let finalSystemTotalQty = finalSystemWarehouseQty + finalSystemK25Qty;
-        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg;
+        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg; // FIXED: Typo diperbaiki dari finalSystemK25K
         let finalSystemTotalFullQty = finalSystemWarehouseFullQty + finalSystemK25FullQty;
-        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemFullKg;
+        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg; // FIXED: Typo diperbaiki dari finalSystemFullKg
 
         // Hubungkan data perhitungan ke komponen KPI Card Weekly Stock Take (Menampilkan Unit & Kg)
         const kpiSiteUnitsEl = document.getElementById('kpi-site-units');
@@ -2177,7 +2166,7 @@
 
         let newEntry = {
             id: currentId,
-            type: document.getElementById('unitType').value,
+            type: "Isotank", // Memaksa format tipe Isotank selalu tersimpan stabil
             cargo: document.getElementById('cargo').value,
             weightKg: weightValue, 
             poNumber: document.getElementById('poNumber').value.toUpperCase(),
@@ -2282,7 +2271,7 @@
         document.getElementById('oldUnitId').value = item.id;
         document.getElementById('btnChangeId').style.display = 'block';
 
-        document.getElementById('unitType').value = item.type;
+        document.getElementById('unitType').value = item.type || "Isotank";
         document.getElementById('cargo').value = item.cargo;
         document.getElementById('weightKg').value = item.weightKg || 0; 
         document.getElementById('poNumber').value = item.poNumber || '';
@@ -2396,7 +2385,7 @@
         XLSX.writeFile(workbook, `Tracking_Isotank_Enterprise_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    // Mempersiapkan indikator live cloud
+    // Memersiapkan indikator live cloud
     setTimeout(() => {
         const syncText = document.getElementById('syncText');
         if (syncText) {
