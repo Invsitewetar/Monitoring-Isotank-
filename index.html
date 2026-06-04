@@ -180,7 +180,7 @@
         /* Tables Custom Styles */
         .table-custom { background: white; border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
         
-        /* UPDATED: Memaksa semua th default di table-custom berwarna abu-abu & tulisan hitam kontras tinggi */
+        /* Memaksa semua th default di table-custom berwarna abu-abu & tulisan hitam kontras tinggi */
         .table-custom thead th {
             background-color: #cbd5e1 !important;
             color: #000000 !important;
@@ -308,25 +308,21 @@
                 <div class="table-responsive shadow-sm rounded-3">
                     <table class="table table-bordered table-custom align-middle text-center m-0" style="font-size: 0.8rem;">
                         <thead>
-                            <tr>
-                                <th rowspan="2" class="align-middle" style="min-width: 150px;">Vendor</th>
-                                <th rowspan="2" class="align-middle">Forecast</th>
-                                <th rowspan="2" class="align-middle">Qty PO</th>
-                                <th colspan="2" class="col-onsite border-dark py-2">Yg Sudah Inbound / Onsite</th>
-                                <th colspan="2" class="col-koe border-dark py-2">Inbound KOE</th>
-                                <th colspan="2" class="col-hub border-dark py-2">Inbound HUB</th>
-                                <th colspan="2" class="col-outbound border-dark py-2">Outbound Isotank</th>
-                                <th rowspan="2" class="col-selisih align-middle">Selisih (qty kg)</th>
+                            <tr class="table-gray">
+                                <th rowspan="2" class="align-middle" style="min-width: 150px; color: #000000 !important;">Vendor</th>
+                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Forecast</th>
+                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Qty PO</th>
+                                <th rowspan="2" class="align-middle" style="color: #000000 !important;">Total Isotank</th>
+                                <th colspan="2" class="col-onsite text-dark border-dark py-2">On Site (Di Site)</th>
+                                <th colspan="2" class="col-koe text-dark border-dark py-2">Transit (Perjalanan)</th>
+                                <th rowspan="2" class="col-hub text-dark border-dark align-middle">Di Vendor</th>
+                                <th rowspan="2" class="col-selisih align-middle text-dark">Selisih (qty kg)</th>
                             </tr>
-                            <tr>
-                                <th class="col-onsite border-dark py-1">Qty Isotank</th>
-                                <th class="col-onsite border-dark py-1">Qty kg</th>
-                                <th class="col-koe border-dark py-1">Qty Isotank</th>
-                                <th class="col-koe border-dark py-1">Qty kg</th>
-                                <th class="col-hub border-dark py-1">Qty Isotank</th>
-                                <th class="col-hub border-dark py-1">Qty kg</th>
-                                <th class="col-outbound border-dark py-1">KOE</th>
-                                <th class="col-outbound border-dark py-1">HUB</th>
+                            <tr class="table-gray">
+                                <th class="col-onsite text-dark border-dark py-1">Full (Terisi)</th>
+                                <th class="col-onsite text-dark border-dark py-1">Empty (Kosong)</th>
+                                <th class="col-koe text-dark border-dark py-1">Outbound</th>
+                                <th class="col-koe text-dark border-dark py-1">Inbound</th>
                             </tr>
                         </thead>
                         <tbody id="vendorSummaryTableBody">
@@ -393,6 +389,7 @@
                 </div>
             </div>
         </div>
+        <!-- Kolom Tanggal Empty ditambahkan sebelum kolom Action, ditambahkan kolom Status PO -->
         <div class="table-responsive shadow-sm rounded-3">
             <table class="table table-custom table-hover align-middle m-0">
                 <thead>
@@ -1057,7 +1054,7 @@
     let vConfigModal = null;
     let sysBaseModalObj = null;
 
-    // --- PROYEKSI CUSTOM CONFIRM MODAL (SINKRON DENGAN PANDUAN UTAMA) ---
+    // --- PROYEKSI CUSTOM CONFIRM MODAL ---
     let confirmModalObj = null;
     function showCustomConfirm(msg, onConfirm) {
         const modalEl = document.getElementById('customConfirmModal');
@@ -1264,6 +1261,7 @@
     }
 
     // --- RENDERING TABEL SUMMARY VENDOR (EXCEL-STYLE SINKRON DENGAN DOKUMEN LAPORAN) ---
+    // UPDATED: Berdasarkan instruksi user, tabel summary ini dimodifikasi sepenuhnya untuk menyajikan rincian jumlah FISIK ISOTANK per-status.
     function renderVendorSummary() {
         const tbody = document.getElementById('vendorSummaryTableBody');
         if (!tbody) return;
@@ -1274,14 +1272,15 @@
         vendorsToTrack.forEach(vendor => {
             const config = vendorConfigs[vendor] || { forecast: 0, qtyPo: 0 };
             
-            let onsiteQty = 0;
+            let totalIsotank = 0;
+            let onsiteFull = 0;
+            let onsiteEmpty = 0;
+            let outboundQty = 0;
+            let inboundQty = 0;
+            let diVendorQty = 0;
+
             let onsiteKg = 0;
-            let inboundKoeQty = 0;
-            let inboundKoeKg = 0;
-            let inboundHubQty = 0;
-            let inboundHubKg = 0;
-            let outboundKoe = 0;
-            let outboundHub = 0;
+            let inboundKg = 0;
 
             masterData.forEach(item => {
                 const itemType = item.type || '';
@@ -1294,49 +1293,41 @@
                 const stdSupplier = getStandardVendorName(itemSupplier);
 
                 if (itemType === 'Isotank' && stdSupplier && stdSupplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
+                    totalIsotank++;
                     let weight = parseFloat(item.weightKg) || 0;
-                    
+                    const isFull = itemStatus.includes('Full') || itemStatus.includes('Terinstal');
+                    const isEmpty = itemStatus.includes('Kosong') || itemStatus.includes('Standby');
+
+                    // On Site (Warehouse & 25KT)
                     if (itemTrackingPos === 'Warehouse' || itemTrackingPos === '25KT') {
-                        onsiteQty++;
                         onsiteKg += weight;
-                    }
-                    
-                    if (itemTrackingPos === 'HUB KOE' && (itemStatus.includes('Inbound') || itemStatus.includes('Akan Masuk'))) {
-                        inboundKoeQty++;
-                        inboundKoeKg += weight;
-                    }
-                    
-                    if ((itemTrackingPos === 'HUB SUB' || itemTrackingPos === 'HUB') && (itemStatus.includes('Inbound') || itemStatus.includes('Akan Masuk'))) {
-                        inboundHubQty++;
-                        inboundHubKg += weight;
-                    }
-                    
-                    if (itemStatus.includes('Outbound') || itemStatus.includes('Sudah Keluar') || itemStatus.includes('Keluar')) {
-                        const route = getShipmentRoute(poNumberStr, idStr);
-                        if (route === 'KOE') {
-                            outboundKoe++;
+                        if (isFull) {
+                            onsiteFull++;
                         } else {
-                            outboundHub++;
+                            onsiteEmpty++;
                         }
                     }
-
-                    if (item.history && Array.isArray(item.history)) {
-                        item.history.forEach(hist => {
-                            const histSupplier = getStandardVendorName(hist.supplier || itemSupplier);
-                            if (histSupplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
-                                const route = getShipmentRoute(hist.po, idStr);
-                                if (route === 'KOE') {
-                                    outboundKoe++;
-                                } else {
-                                    outboundHub++;
-                                }
-                            }
-                        });
+                    
+                    // Outbound
+                    if (itemStatus.includes('Outbound') || itemStatus.includes('Perjalanan (Outbound)')) {
+                        outboundQty++;
+                    }
+                    
+                    // Inbound
+                    if (itemStatus.includes('Inbound') || itemStatus.includes('Perjalanan (Inbound)')) {
+                        inboundQty++;
+                        inboundKg += weight; // Tambahkan berat ke perhitungan selisih PO
+                    }
+                    
+                    // Di Vendor
+                    if (itemTrackingPos === 'Vendor') {
+                        diVendorQty++;
                     }
                 }
             });
 
-            let totalDiterima = onsiteKg + inboundKoeKg + inboundHubKg;
+            // Perhitungan selisih sisa kontrak PO (kg)
+            let totalDiterima = onsiteKg + inboundKg;
             let selisihKg = config.qtyPo - totalDiterima;
 
             const formatNum = (num) => num === 0 ? '-' : num.toLocaleString('id-ID');
@@ -1351,14 +1342,20 @@
                     <td class="text-start fw-bold">${vendor}</td>
                     <td class="fw-bold">${formatNum(config.forecast)}</td>
                     <td class="fw-bold">${formatNum(config.qtyPo)}</td>
-                    <td class="col-onsite">${onsiteQty === 0 ? '-' : onsiteQty}</td>
-                    <td class="col-onsite fw-bold">${formatNum(onsiteKg)}</td>
-                    <td class="col-koe">${inboundKoeQty === 0 ? '-' : inboundKoeQty}</td>
-                    <td class="col-koe fw-bold">${formatNum(inboundKoeKg)}</td>
-                    <td class="col-hub" style="background-color: #dbeafe !important;">${inboundHubQty === 0 ? '-' : inboundHubQty}</td>
-                    <td class="col-hub fw-bold" style="background-color: #dbeafe !important;">${formatNum(inboundHubKg)}</td>
-                    <td class="col-outbound">${outboundKoe === 0 ? '0' : outboundKoe}</td>
-                    <td class="col-outbound">${outboundHub === 0 ? '0' : outboundHub}</td>
+                    <td class="fw-bold bg-light" style="font-size: 0.9rem;">${totalIsotank === 0 ? '-' : totalIsotank}</td>
+                    
+                    <!-- On Site (Full & Empty) -->
+                    <td class="col-onsite">${onsiteFull === 0 ? '-' : onsiteFull}</td>
+                    <td class="col-onsite">${onsiteEmpty === 0 ? '-' : onsiteEmpty}</td>
+                    
+                    <!-- Transit / Perjalanan (Outbound & Inbound) -->
+                    <td class="col-koe">${outboundQty === 0 ? '-' : outboundQty}</td>
+                    <td class="col-koe">${inboundQty === 0 ? '-' : inboundQty}</td>
+                    
+                    <!-- Di Vendor -->
+                    <td class="col-hub">${diVendorQty === 0 ? '-' : diVendorQty}</td>
+                    
+                    <!-- Selisih Kontrak PO -->
                     <td class="col-selisih text-dark">${formatSelisih(selisihKg)}</td>
                 </tr>
             `;
@@ -1853,9 +1850,9 @@
         let finalSystemK25EmptyKg = finalSystemK25Kg - finalSystemK25FullKg;
 
         let finalSystemTotalQty = finalSystemWarehouseQty + finalSystemK25Qty;
-        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg;
+        let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg; // FIXED: Typo diperbaiki dari finalSystemK25K
         let finalSystemTotalFullQty = finalSystemWarehouseFullQty + finalSystemK25FullQty;
-        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg;
+        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemK25FullKg; // FIXED: Typo diperbaiki dari finalSystemFullKg
         
         let finalSystemTotalEmptyQty = finalSystemWarehouseEmptyQty + finalSystemK25EmptyQty;
         let finalSystemTotalEmptyKg = finalSystemWarehouseEmptyKg + finalSystemK25EmptyKg;
