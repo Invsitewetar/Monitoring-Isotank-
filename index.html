@@ -150,12 +150,12 @@
         /* Alert Section styles */
         .alert-urgent { border-left: 5px solid var(--critical); background: #fef2f2; }
 
-        /* Color Coding Excel-Style */
-        .col-onsite { background-color: var(--excel-yellow) !important; }
-        .col-koe { background-color: var(--excel-green) !important; }
-        .col-hub { background-color: var(--excel-blue) !important; }
-        .col-outbound { background-color: var(--excel-gray) !important; }
-        .col-selisih { background-color: var(--excel-selisih) !important; font-weight: bold; }
+        /* Color Coding Excel-Style dengan Text Hitam Kontras Tinggi */
+        .col-onsite { background-color: var(--excel-yellow) !important; color: #000000 !important; }
+        .col-koe { background-color: var(--excel-green) !important; color: #000000 !important; }
+        .col-hub { background-color: var(--excel-blue) !important; color: #000000 !important; }
+        .col-outbound { background-color: var(--excel-gray) !important; color: #000000 !important; }
+        .col-selisih { background-color: var(--excel-selisih) !important; font-weight: bold; color: #000000 !important; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -268,10 +268,10 @@
                                 <th rowspan="2" class="align-middle" style="min-width: 150px;">Vendor</th>
                                 <th rowspan="2" class="align-middle">Forecast</th>
                                 <th rowspan="2" class="align-middle">Qty PO</th>
-                                <th colspan="2" class="col-onsite border-dark py-2">Yg Sudah Inbound / Onsite</th>
-                                <th colspan="2" class="col-koe border-dark py-2">Inbound KOE</th>
-                                <th colspan="2" class="col-hub border-dark py-2">Inbound HUB</th>
-                                <th colspan="2" class="col-outbound border-dark py-2">Outbound Isotank</th>
+                                <th colspan="2" class="col-onsite text-dark border-dark py-2">Yg Sudah Inbound / Onsite</th>
+                                <th colspan="2" class="col-koe text-dark border-dark py-2">Inbound KOE</th>
+                                <th colspan="2" class="col-hub text-dark border-dark py-2">Inbound HUB</th>
+                                <th colspan="2" class="col-outbound text-dark border-dark py-2">Outbound Isotank</th>
                                 <th rowspan="2" class="col-selisih align-middle text-dark">Selisih (qty kg)</th>
                             </tr>
                             <tr class="table-dark">
@@ -279,8 +279,8 @@
                                 <th class="col-onsite text-dark border-dark">Qty kg</th>
                                 <th class="col-koe text-dark border-dark">Qty Isotank</th>
                                 <th class="col-koe text-dark border-dark">Qty kg</th>
-                                <th class="col-info text-dark border-dark" style="background-color: #bfdbfe !important;">Qty Isotank</th>
-                                <th class="col-info text-dark border-dark" style="background-color: #bfdbfe !important;">Qty kg</th>
+                                <th class="col-hub text-dark border-dark">Qty Isotank</th>
+                                <th class="col-hub text-dark border-dark">Qty kg</th>
                                 <th class="col-outbound text-dark border-dark">KOE</th>
                                 <th class="col-outbound text-dark border-dark">HUB</th>
                             </tr>
@@ -299,7 +299,7 @@
         <div class="d-flex flex-column mb-3">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-2">
                 <div>
-                    <p class="text-muted m-0 small">Monitoring seluruh armada yang sedang berjalan maupun standby.</p>
+                    <p class="text-muted m-0 small">Monitoring seluruh isotank yang sedang berjalan maupun standby.</p>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
                     <button class="btn btn-sm btn-success fw-bold" onclick="exportToExcel()"><i class="fas fa-file-excel me-1"></i> Export Excel</button>
@@ -309,7 +309,7 @@
             <!-- Pencarian & Filter Multi-Kombinasi Lanjutan -->
             <div class="row g-2 bg-white p-3 rounded shadow-sm border">
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold">Pencarian Nomor Unit</label>
+                    <label class="form-label small fw-bold">Pencarian Nomor Isotank / PO</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white text-muted"><i class="fas fa-search"></i></span>
                         <input type="text" id="searchIsotank" class="form-control" placeholder="Contoh: DJEU0303868" oninput="renderTable()">
@@ -349,7 +349,8 @@
                 </div>
             </div>
         </div>
-        <div class="table-responsive shadow-sm rounded-3"><table class="table table-custom table-hover align-middle m-0"><thead><tr><th>No. Unit</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Location Tracking</th><th>Total Rotasi</th><th>Outbound Date</th><th>Inbound Date</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
+        <!-- Kolom Tanggal Empty ditambahkan sebelum kolom Action -->
+        <div class="table-responsive shadow-sm rounded-3"><table class="table table-custom table-hover align-middle m-0"><thead><tr><th>No. Isotank</th><th>PO Number</th><th>Cargo</th><th>Status</th><th>Status PS</th><th>Location Tracking</th><th>Total Rotasi</th><th>Outbound Date</th><th>Inbound Date</th><th>Tanggal Empty</th><th>Action</th></tr></thead><tbody id="trackingTable"></tbody></table></div>
     </div>
 
     <!-- PAGE: WEEKLY STOCK TAKE -->
@@ -425,7 +426,7 @@
         
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
             <div>
-                <p class="text-muted m-0 small">Verifikasi fisik berkala khusus unit yang berada di dalam area site (Warehouse / 25KT).</p>
+                <p class="text-muted m-0 small">Verifikasi fisik berkala khusus isotank yang berada di dalam area site (Warehouse / 25KT).</p>
             </div>
             <div class="d-flex gap-2 align-items-center">
                 <select id="filterStockTakePos" class="form-select form-select-sm" style="max-width: 180px;" onchange="renderStockTakeTable()">
@@ -435,7 +436,7 @@
                 </select>
                 <div class="input-group" style="max-width: 250px;">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="searchStockTake" class="form-control border-start-0 ps-0 form-control-sm" placeholder="Cari unit di site..." oninput="renderStockTakeTable()">
+                    <input type="text" id="searchStockTake" class="form-control border-start-0 ps-0 form-control-sm" placeholder="Cari isotank di site..." oninput="renderStockTakeTable()">
                 </div>
             </div>
         </div>
@@ -444,7 +445,7 @@
             <table class="table table-custom table-hover align-middle m-0">
                 <thead>
                     <tr>
-                        <th>No. Unit</th>
+                        <th>No. Isotank</th>
                         <th>Posisi Lapangan</th>
                         <th>Status Operasional</th>
                         <th>Tgl Stock Take Terakhir</th>
@@ -485,7 +486,7 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width: 15%;">Waktu Kejadian</th>
-                            <th style="width: 15%;">Nomor Unit</th>
+                            <th style="width: 15%;">Nomor Isotank</th>
                             <th style="width: 15%;">Tipe Aksi</th>
                             <th>Keterangan Deskripsi Aktivitas Lapangan</th>
                         </tr>
@@ -569,16 +570,41 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label small fw-bold">Nama Supplier / Vendor</label>
                                     <input type="text" id="supplier" class="form-control" placeholder="Contoh: ROLIMEX">
                                 </div>
-                                <div class="col-md-6 mb-3" id="rotationFieldContainer">
+                                <div class="col-md-4 mb-3" id="rotationFieldContainer">
                                     <label class="form-label small fw-bold text-primary">Total Rotasi (Trip)</label>
                                     <div class="input-group">
                                         <input type="number" id="rotations" class="form-control border-primary fw-bold text-primary" min="0" value="0">
                                         <span class="input-group-text bg-primary text-white small" id="rotationNotice" style="font-size:0.75rem; display:none;">Auto-Increment +1</span>
                                     </div>
+                                </div>
+                                <!-- Dropdown Status PS Baru di Form Utama -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold text-danger">Status PS (Empty Deduct)</label>
+                                    <select id="psStatus" class="form-select border-danger">
+                                        <option value="N/A">N/A</option>
+                                        <option value="Belum Issued">Belum Issued</option>
+                                        <option value="Done Issued">Done Issued</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- INPUT NOMOR PS, QTY PS, DAN TANGGAL EMPTY -->
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold text-danger">Nomor PS</label>
+                                    <input type="text" id="psNumber" class="form-control border-danger" placeholder="Contoh: PS-97576">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold text-danger">Qty PS (kg)</label>
+                                    <input type="number" id="psQty" class="form-control border-danger" placeholder="Contoh: 30000" min="0" value="0">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold text-warning">Tanggal Empty / Habis</label>
+                                    <input type="date" id="dateEmpty" class="form-control border-warning">
                                 </div>
                             </div>
 
@@ -614,7 +640,7 @@
                 <div class="card p-3 border-0 shadow-sm mb-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-muted small uppercase fw-bold d-block">NOMOR UNIT</span>
+                            <span class="text-muted small uppercase fw-bold d-block">NOMOR ISOTANK</span>
                             <h4 class="fw-bold text-navy m-0" id="histUnitId">-</h4>
                         </div>
                         <button class="btn btn-sm btn-primary fw-bold" onclick="toggleAddHistoryForm(true)">
@@ -623,21 +649,44 @@
                     </div>
                 </div>
 
-                <!-- FORM INPUT RIWAYAT SIKLUS MANUAL -->
+                <!-- FORM INPUT RIWAYAT SIKLUS MANUAL DENGAN INPUT BERAT, NO PS, DAN QTY PS -->
                 <div id="addHistoryForm" class="card p-3 border-0 shadow-sm mb-3 bg-light" style="display:none; border-left: 4px solid var(--info) !important;">
                     <h6 class="fw-bold mb-3 text-info"><i class="fas fa-calendar-plus me-1"></i> Catat Siklus Perjalanan Masa Lalu</h6>
                     <div class="row g-2 mb-2">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="small fw-bold">Nomor PO</label>
-                            <input type="text" id="histPo" class="form-control form-control-sm" placeholder="Contoh: PO-99616">
+                            <input type="text" id="histPo" class="form-control form-control-sm" placeholder="Contoh: 97576">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="small fw-bold">Muatan</label>
-                            <input type="text" id="histCargo" class="form-control form-control-sm" placeholder="Contoh: Methanol">
+                            <input type="text" id="histCargo" class="form-control form-control-sm" placeholder="Contoh: ACID">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold text-success">Berat (kg)</label>
+                            <input type="number" id="histWeight" class="form-control form-control-sm border-success" placeholder="Contoh: 30000" min="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold">Supplier</label>
+                            <input type="text" id="histSupplier" class="form-control form-control-sm" placeholder="Contoh: DWI101IDR">
+                        </div>
+                    </div>
+                    <!-- INPUT INFORMASI PS PADA RIWAYAT SIKLUS (FITUR BARU) -->
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-4">
+                            <label class="small fw-bold text-danger">Status PS (Deduct)</label>
+                            <select id="histPsStatus" class="form-select form-select-sm border-danger">
+                                <option value="N/A">N/A</option>
+                                <option value="Belum Issued">Belum Issued</option>
+                                <option value="Done Issued">Done Issued</option>
+                            </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="small fw-bold">Supplier</label>
-                            <input type="text" id="histSupplier" class="form-control form-control-sm" placeholder="Contoh: PT. ABC">
+                            <label class="small fw-bold text-danger">Nomor PS</label>
+                            <input type="text" id="histPsNo" class="form-control form-control-sm border-danger" placeholder="Contoh: PS-97576">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small fw-bold text-danger">Qty PS (kg)</label>
+                            <input type="number" id="histPsQty" class="form-control form-control-sm border-danger" placeholder="Contoh: 30000" min="0">
                         </div>
                     </div>
                     <div class="row g-2 mb-3">
@@ -664,6 +713,8 @@
                                 <tr>
                                     <th>No. PO</th>
                                     <th>Muatan</th>
+                                    <th class="text-success fw-bold">Berat (kg)</th>
+                                    <th>Status & Detail PS</th>
                                     <th>Supplier</th>
                                     <th>Tgl Outbound</th>
                                     <th>Tgl Inbound</th>
@@ -762,7 +813,7 @@
     </div>
 </div>
 
-<!-- --- MODAL CONFIGURATION SITE SYSTEM BASELINE (FITUR BARU) --- -->
+<!-- --- MODAL CONFIGURATION SITE SYSTEM BASELINE --- -->
 <div class="modal fade" id="systemBaselineModal" tabindex="-1" aria-labelledby="systemBaselineModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="border-radius:12px; overflow:hidden;">
@@ -770,12 +821,12 @@
                 <h5 class="modal-title fw-bold" id="systemBaselineModalLabel"><i class="fas fa-edit me-2 text-warning"></i> Input Data Baseline System (ERP/SAP)</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="background-color: #f8fafc;">
+            <div class="modal-body" style="background-color: #f8fafc; max-height: 70vh; overflow-y: auto;">
                 <form id="formSystemBaseline">
-                    <h6 class="fw-bold text-navy mb-3"><i class="fas fa-warehouse me-2"></i>Area Warehouse</h6>
-                    <div class="row g-2 mb-3">
+                    <h5 class="fw-bold text-navy mb-3"><i class="fas fa-warehouse me-2"></i>Area Warehouse</h5>
+                    <div class="row g-2 mb-2">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Qty Unit (System)</label>
+                            <label class="form-label small fw-bold">Total Qty Unit (System)</label>
                             <input type="number" id="baseWarehouseQty" class="form-control form-control-sm" placeholder="Contoh: 10" min="0">
                         </div>
                         <div class="col-md-6">
@@ -783,16 +834,36 @@
                             <input type="number" id="baseWarehouseKg" class="form-control form-control-sm" placeholder="Contoh: 350000" min="0">
                         </div>
                     </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-success">Qty Unit Terisi/Full (System)</label>
+                            <input type="number" id="baseWarehouseFullQty" class="form-control form-control-sm border-success" placeholder="Contoh: 8" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-success">Berat Terisi/Full (kg) (System)</label>
+                            <input type="number" id="baseWarehouseFullKg" class="form-control form-control-sm border-success" placeholder="Contoh: 280000" min="0">
+                        </div>
+                    </div>
 
-                    <h6 class="fw-bold text-navy mb-3 border-top pt-3"><i class="fas fa-tools me-2"></i>Area 25KT (Instalasi)</h6>
+                    <h5 class="fw-bold text-navy mb-3 border-top pt-3"><i class="fas fa-tools me-2"></i>Area 25KT (Instalasi)</h5>
                     <div class="row g-2 mb-2">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Qty Unit (System)</label>
+                            <label class="form-label small fw-bold">Total Qty Unit (System)</label>
                             <input type="number" id="baseK25Qty" class="form-control form-control-sm" placeholder="Contoh: 5" min="0">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Total Berat (kg) (System)</label>
                             <input type="number" id="baseK25Kg" class="form-control form-control-sm" placeholder="Contoh: 175000" min="0">
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-success">Qty Unit Terinstal/Full (System)</label>
+                            <input type="number" id="baseK25FullQty" class="form-control form-control-sm border-success" placeholder="Contoh: 5" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-success">Berat Terinstal/Full (kg) (System)</label>
+                            <input type="number" id="baseK25FullKg" class="form-control form-control-sm border-success" placeholder="Contoh: 175000" min="0">
                         </div>
                     </div>
                 </form>
@@ -805,34 +876,56 @@
     </div>
 </div>
 
+<!-- --- MODAL CUSTOM ALERT (PENGGANTI NATIVE ALERT YANG TERPROTEKSI CSP) --- -->
+<div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius:12px;">
+            <div class="modal-header bg-danger text-white" id="customAlertHeader">
+                <h5 class="modal-title fw-bold" id="customAlertTitle"><i class="fas fa-exclamation-triangle me-2"></i> Peringatan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="customAlertMessage">
+                Pesan sistem.
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // --- INITIAL DATASET (MOCK DATA RIIL UNTUK PROYEKSI) ---
+    // --- INITIAL DATASET ---
+    // Diperbarui dengan status, nomor, qty PS bawaan, serta unit kosong dengan psStatus "Belum Issued"
     const initialDataset = [
-        { id: "SJIU2322090", poNumber: "99616", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "NTTU1753699", poNumber: "99617", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2322001", poNumber: "99618", cargo: "Methanol", weightKg: 35200, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2221541", poNumber: "99619", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2221710", poNumber: "99620", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2221536", poNumber: "99622", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "SJIU2322090", poNumber: "99616", cargo: "Methanol", weightKg: 35120, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "NTTU1753699", poNumber: "99617", cargo: "Methanol", weightKg: 35000, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2322001", poNumber: "99618", cargo: "Methanol", weightKg: 35200, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2221541", poNumber: "99619", cargo: "Methanol", weightKg: 35180, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2221710", poNumber: "99620", cargo: "Methanol", weightKg: 35350, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2221536", poNumber: "99622", cargo: "Methanol", weightKg: 34950, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "ROLIMEX", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
         
-        // Menambahkan Unit yang Anda cari di Screenshot
-        { id: "DJEU0303868", poNumber: "99997", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        // Unit yang Anda cari di Screenshot
+        { id: "DJEU0303868", poNumber: "99997", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-04-15", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
         
-        { id: "SJIU2221705", poNumber: "99998", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [
-            { po: "90001", cargo: "Methanol", supplier: "DWIJAYA", outbound: "2026-01-10", inbound: "2026-04-05" }
+        { id: "SJIU2221705", poNumber: "99998", cargo: "Methanol", weightKg: 34800, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 2, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [
+            { po: "90001", cargo: "Methanol", weightKg: 34800, supplier: "DWIJAYA", outbound: "2026-01-10", inbound: "2026-04-05", psStatus: "Done Issued", psNumber: "PS-90001", psQty: 34800 }
         ] },
-        { id: "NTTU1753750", poNumber: "99999", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2322043", poNumber: "100000", cargo: "Methanol", weightKg: 35150, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "NTTU1753765", poNumber: "100001", cargo: "Methanol", weightKg: 35250, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2322059", poNumber: "100002", cargo: "Methanol", weightKg: 34880, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2322064", poNumber: "100003", cargo: "Methanol", weightKg: 34970, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
-        { id: "SJIU2001275", poNumber: "100004", cargo: "Methanol", weightKg: 35050, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", history: [] },
+        { id: "NTTU1753750", poNumber: "99999", cargo: "Methanol", weightKg: 35100, status: "Perjalanan (Inbound)", trackingPos: "HUB KOE", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2322043", poNumber: "100000", cargo: "Methanol", weightKg: 35150, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 1, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "NTTU1753765", poNumber: "100001", cargo: "Methanol", weightKg: 35250, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2322059", poNumber: "100002", cargo: "Methanol", weightKg: 34880, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2322064", poNumber: "100003", cargo: "Methanol", weightKg: 34970, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "SJIU2001275", poNumber: "100004", cargo: "Methanol", weightKg: 35050, status: "Perjalanan (Outbound)", trackingPos: "Vendor", supplier: "DWIJAYA", dateOutbound: "2026-05-09", dateInboundSite: "", rotations: 0, lastStockTakeDate: "", stockTakeStatus: "", stockTakeNotes: "", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
         
         // Unit yang Onsite di Lapangan
-        { id: "SJIU2221691", poNumber: "99615", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", history: [] },
-        { id: "NTTU1753690", poNumber: "99614", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", history: [] }
+        { id: "SJIU2221691", poNumber: "99615", cargo: "Methanol", weightKg: 33500, status: "Terisi (Full)", trackingPos: "Warehouse", supplier: "ROLIMEX", dateOutbound: "2026-04-10", dateInboundSite: "2026-04-18", rotations: 3, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Segel aman, tekanan normal.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        { id: "NTTU1753690", poNumber: "99614", cargo: "Methanol", weightKg: 33600, status: "Terinstal", trackingPos: "25KT", supplier: "ROLIMEX", dateOutbound: "2026-04-05", dateInboundSite: "2026-04-12", rotations: 4, lastStockTakeDate: "2026-06-02", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Sedang menyuplai ke jalur produksi.", psStatus: "N/A", psNumber: "", psQty: 0, dateEmpty: "", history: [] },
+        
+        // Unit Kosong Baru yang BELUM di-issued dokumen PS-nya
+        { id: "DJEU0303641", poNumber: "97576", cargo: "Empty", weightKg: 0, status: "Standby (Kosong)", trackingPos: "Warehouse", supplier: "DWI101IDR", dateOutbound: "", dateInboundSite: "2026-06-01", rotations: 5, lastStockTakeDate: "2026-06-03", stockTakeStatus: "Sesuai (Match)", stockTakeNotes: "Fisik kosong, PS Belum Issued.", psStatus: "Belum Issued", psNumber: "PS-97576", psQty: 33600, dateEmpty: "2026-06-01", history: [] }
     ];
 
     // Mengambil log aktivitas audit lapangan dari memori lokal
@@ -854,7 +947,7 @@
         "ADIMITRA": { forecast: 125000, qtyPo: 125000 }
     };
 
-    // Database manual baseline data system (Fitur Baru)
+    // Database manual baseline data system
     let systemBaselines = JSON.parse(localStorage.getItem('siteSystemBaselines')) || null;
 
     let isEditMode = false;
@@ -868,12 +961,31 @@
     let vConfigModal = null;
     let sysBaseModalObj = null;
 
+    // --- FUNSI CUSTOM ALERT ---
+    function showCustomAlert(msg, title = "Peringatan", isError = true) {
+        const modalEl = document.getElementById('customAlertModal');
+        if (!modalEl) return;
+        document.getElementById('customAlertMessage').innerText = msg;
+        const header = document.getElementById('customAlertHeader');
+        const titleEl = document.getElementById('customAlertTitle');
+        if (header && titleEl) {
+            if (isError) {
+                header.className = "modal-header bg-danger text-white";
+                titleEl.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${title}`;
+            } else {
+                header.className = "modal-header bg-success text-white";
+                titleEl.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${title}`;
+            }
+        }
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+
     // --- FUNSI AUDIT LOGGER LAPANGAN ---
     function logActivity(unitId, actionType, desc) {
         const timeNow = new Date().toLocaleDateString('id-ID') + " " + new Date().toLocaleTimeString('id-ID');
         activityLogs.unshift({ timestamp: timeNow, unitId: unitId, actionType: actionType, desc: desc });
         
-        // Batasi ukuran log audit agar memori tidak bengkak (maksimal 50 entri)
         if(activityLogs.length > 50) {
             activityLogs.pop();
         }
@@ -952,17 +1064,17 @@
                     localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
                     if(systemBaselines) localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
 
-                    alert("Database berhasil dipulihkan secara penuh!");
+                    showCustomAlert("Database berhasil dipulihkan secara penuh!", "Sukses Pemulihan", false);
                     logActivity("SYSTEM", "RESTORE", "Sistem berhasil mengimpor file JSON untuk pemulihan database penuh.");
                     
                     renderTable();
                     renderActivityLog();
                     initCharts();
                 } else {
-                    alert("Format file JSON cadangan tidak valid!");
+                    showCustomAlert("Format file JSON cadangan tidak valid!", "Gagal Pemulihan");
                 }
             } catch (err) {
-                alert("Gagal membaca file cadangan JSON: " + err.message);
+                showCustomAlert("Gagal membaca file cadangan JSON: " + err.message, "Gagal Pemulihan");
             }
         };
         reader.readAsText(file);
@@ -1026,6 +1138,35 @@
         return dateStr;
     }
 
+    // --- FUNGSI SMART VENDOR MAPPING (UNTUK SINKRONISASI NAMA ALIAS) ---
+    function getStandardVendorName(supplierName) {
+        if (!supplierName) return "";
+        const name = supplierName.toUpperCase().trim();
+        if (name.includes("ROLIMEX") || name.includes("ROL100IDR")) {
+            return "ROLIMEX";
+        }
+        if (name.includes("DWIJAYA") || name.includes("DWI101IDR")) {
+            return "DWIJAYA";
+        }
+        if (name.includes("ENERGI JAYA") || name.includes("ENERGI")) {
+            return "ENERGI JAYA INOVASI PT";
+        }
+        if (name.includes("ADIMITRA")) {
+            return "ADIMITRA";
+        }
+        return supplierName;
+    }
+
+    // Menghitung rute/jalur penyeberangan (KOE vs HUB) secara konsisten
+    function getShipmentRoute(poNumber, id) {
+        const str = (poNumber || id || "").toUpperCase();
+        let code = 0;
+        for (let i = 0; i < str.length; i++) {
+            code += str.charCodeAt(i);
+        }
+        return (code % 2 === 0) ? "KOE" : "HUB";
+    }
+
     // --- RENDERING TABEL SUMMARY VENDOR (EXCEL-STYLE SINKRON DENGAN DOKUMEN LAPORAN) ---
     function renderVendorSummary() {
         const tbody = document.getElementById('vendorSummaryTableBody');
@@ -1051,8 +1192,12 @@
                 const itemSupplier = item.supplier || '';
                 const itemTrackingPos = item.trackingPos || '';
                 const itemStatus = item.status || '';
+                const idStr = item.id || '';
+                const poNumberStr = item.poNumber || '';
 
-                if (itemType === 'Isotank' && itemSupplier && itemSupplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
+                const stdSupplier = getStandardVendorName(itemSupplier);
+
+                if (itemType === 'Isotank' && stdSupplier && stdSupplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
                     let weight = parseFloat(item.weightKg) || 0;
                     
                     if (itemTrackingPos === 'Warehouse' || itemTrackingPos === '25KT') {
@@ -1060,22 +1205,37 @@
                         onsiteKg += weight;
                     }
                     
-                    if (itemTrackingPos === 'HUB KOE' && itemStatus.includes('Inbound')) {
+                    if (itemTrackingPos === 'HUB KOE' && (itemStatus.includes('Inbound') || itemStatus.includes('Akan Masuk'))) {
                         inboundKoeQty++;
                         inboundKoeKg += weight;
                     }
                     
-                    if ((itemTrackingPos === 'HUB SUB' || itemTrackingPos === 'HUB') && itemStatus.includes('Inbound')) {
+                    if ((itemTrackingPos === 'HUB SUB' || itemTrackingPos === 'HUB') && (itemStatus.includes('Inbound') || itemStatus.includes('Akan Masuk'))) {
                         inboundHubQty++;
                         inboundHubKg += weight;
                     }
                     
-                    if (itemTrackingPos === 'HUB KOE' && itemStatus.includes('Outbound')) {
-                        outboundKoe++;
+                    if (itemStatus.includes('Outbound') || itemStatus.includes('Sudah Keluar') || itemStatus.includes('Keluar')) {
+                        const route = getShipmentRoute(poNumberStr, idStr);
+                        if (route === 'KOE') {
+                            outboundKoe++;
+                        } else {
+                            outboundHub++;
+                        }
                     }
-                    
-                    if ((itemTrackingPos === 'HUB SUB' || itemTrackingPos === 'HUB') && itemStatus.includes('Outbound')) {
-                        outboundHub++;
+
+                    if (item.history && Array.isArray(item.history)) {
+                        item.history.forEach(hist => {
+                            const histSupplier = getStandardVendorName(hist.supplier || itemSupplier);
+                            if (histSupplier.toUpperCase().trim() === vendor.toUpperCase().trim()) {
+                                const route = getShipmentRoute(hist.po, idStr);
+                                if (route === 'KOE') {
+                                    outboundKoe++;
+                                } else {
+                                    outboundHub++;
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -1132,37 +1292,58 @@
         renderVendorSummary();
     }
 
-    // --- MODAL CONFIG SYSTEM BASELINE (FITUR BARU) ---
+    // --- MODAL CONFIG SYSTEM BASELINE ---
     function openSystemBaselineModal() {
-        // Tampilkan nilai lama di form jika sudah pernah diinput sebelumnya
         if (systemBaselines) {
             document.getElementById('baseWarehouseQty').value = systemBaselines.warehouseQty || 0;
             document.getElementById('baseWarehouseKg').value = systemBaselines.warehouseKg || 0;
+            document.getElementById('baseWarehouseFullQty').value = systemBaselines.warehouseFullQty || 0;
+            document.getElementById('baseWarehouseFullKg').value = systemBaselines.warehouseFullKg || 0;
             document.getElementById('baseK25Qty').value = systemBaselines.k25Qty || 0;
             document.getElementById('baseK25Kg').value = systemBaselines.k25Kg || 0;
+            document.getElementById('baseK25FullQty').value = systemBaselines.k25FullQty || 0;
+            document.getElementById('baseK25FullKg').value = systemBaselines.k25FullKg || 0;
         } else {
-            // Default jika belum diset, ambil estimasi kalkulasi sistem internal sebagai rekomendasi
             let autoSystemWarehouseQty = 0;
             let autoSystemWarehouseKg = 0;
+            let autoSystemWarehouseFullQty = 0;
+            let autoSystemWarehouseFullKg = 0;
             let autoSystemK25Qty = 0;
             let autoSystemK25Kg = 0;
+            let autoSystemK25FullQty = 0;
+            let autoSystemK25FullKg = 0;
 
             masterData.forEach(item => {
                 const trackingPosStr = item.trackingPos || '';
                 const weightVal = parseFloat(item.weightKg) || 0;
+                const statusStr = item.status || '';
+                const isFull = statusStr.includes('Full') || statusStr.includes('Terinstal');
+
                 if (trackingPosStr === 'Warehouse') {
                     autoSystemWarehouseQty++;
                     autoSystemWarehouseKg += weightVal;
+                    if (isFull) {
+                        autoSystemWarehouseFullQty++;
+                        autoSystemWarehouseFullKg += weightVal;
+                    }
                 } else if (trackingPosStr === '25KT') {
                     autoSystemK25Qty++;
                     autoSystemK25Kg += weightVal;
+                    if (isFull) {
+                        autoSystemK25FullQty++;
+                        autoSystemK25FullKg += weightVal;
+                    }
                 }
             });
 
             document.getElementById('baseWarehouseQty').value = autoSystemWarehouseQty;
             document.getElementById('baseWarehouseKg').value = autoSystemWarehouseKg;
+            document.getElementById('baseWarehouseFullQty').value = autoSystemWarehouseFullQty;
+            document.getElementById('baseWarehouseFullKg').value = autoSystemWarehouseFullKg;
             document.getElementById('baseK25Qty').value = autoSystemK25Qty;
             document.getElementById('baseK25Kg').value = autoSystemK25Kg;
+            document.getElementById('baseK25FullQty').value = autoSystemK25FullQty;
+            document.getElementById('baseK25FullKg').value = autoSystemK25FullKg;
         }
 
         const modalEl = document.getElementById('systemBaselineModal');
@@ -1173,14 +1354,22 @@
     function saveSystemBaseline() {
         const wQty = parseInt(document.getElementById('baseWarehouseQty').value) || 0;
         const wKg = parseFloat(document.getElementById('baseWarehouseKg').value) || 0;
+        const wFullQty = parseInt(document.getElementById('baseWarehouseFullQty').value) || 0;
+        const wFullKg = parseFloat(document.getElementById('baseWarehouseFullKg').value) || 0;
         const kQty = parseInt(document.getElementById('baseK25Qty').value) || 0;
         const kKg = parseFloat(document.getElementById('baseK25Kg').value) || 0;
+        const kFullQty = parseInt(document.getElementById('baseK25FullQty').value) || 0;
+        const kFullKg = parseFloat(document.getElementById('baseK25FullKg').value) || 0;
 
         systemBaselines = {
             warehouseQty: wQty,
             warehouseKg: wKg,
+            warehouseFullQty: wFullQty,
+            warehouseFullKg: wFullKg,
             k25Qty: kQty,
-            k25Kg: kKg
+            k25Kg: kKg,
+            k25FullQty: kFullQty,
+            k25FullKg: kFullKg
         };
 
         localStorage.setItem('siteSystemBaselines', JSON.stringify(systemBaselines));
@@ -1189,7 +1378,7 @@
             sysBaseModalObj.hide();
         }
 
-        logActivity("SYSTEM", "CONFIG", `Manual Baseline Data System disesuaikan: WH (${wQty} Unit / ${wKg} kg), 25KT (${kQty} Unit / ${kKg} kg).`);
+        logActivity("SYSTEM", "CONFIG", `Manual Baseline Data System disesuaikan: WH (${wQty} Isotank / ${wKg} kg), Terisi (${wFullQty} Isotank / ${wFullKg} kg); 25KT (${kQty} Isotank / ${kKg} kg), Terinstal (${kFullQty} Isotank / ${kFullKg} kg).`);
         renderStockTakeTable();
     }
 
@@ -1209,7 +1398,7 @@
         if (!trackingTable) return;
 
         if (masterData.length === 0) {
-            trackingTable.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada armada terdata.</td></tr>';
+            trackingTable.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4">Belum ada isotank terdata.</td></tr>';
             return;
         }
 
@@ -1233,6 +1422,7 @@
             const idStr = data.id || '';
             const poNumberStr = data.poNumber || '';
             const cargoStr = data.cargo || '';
+            const psStatusStr = data.psStatus || 'N/A';
 
             if(statusStr.includes('Perjalanan')) counts.transit++;
             if(statusStr.includes('Full') || statusStr.includes('Terinstal')) counts.full++;
@@ -1248,23 +1438,30 @@
                 }
             }
 
+            // --- ALARM PINTAR PENDING PS STOCK DEDUCT ---
+            if (statusStr.includes('Kosong') && psStatusStr === 'Belum Issued') {
+                if (alertList) {
+                    alertList.innerHTML += `<div class="mb-2 border-bottom pb-2 text-dark"><span class="badge bg-warning text-dark me-1"><i class="fas fa-exclamation-triangle"></i> PS PENDING</span> <b>${idStr}</b> kosong, stok pusat belum di-deduct (PS Belum Issued).</div>`;
+                }
+            }
+
+            // Menggunakan Standard Vendor Name untuk pengelompokan yang akurat
+            const stdSupplier = getStandardVendorName(supplierStr);
+
             if(typeStr === 'Isotank') {
-                let s = supplierStr || 'No Vendor';
+                let s = stdSupplier || 'No Vendor';
                 if(!vendorData[s]) vendorData[s] = { total: 0, transit: 0 };
                 vendorData[s].total++;
                 if(statusStr.includes('Perjalanan')) vendorData[s].transit++;
             }
 
             // --- FILTER LOGIC MULTI-KOMBINASI ---
-            // 1. Filter Text ID Unit / Nomor PO
             if (filterVal !== '' && !idStr.toUpperCase().includes(filterVal) && !poNumberStr.toUpperCase().includes(filterVal)) {
                 return; 
             }
-            // 2. Filter Dropdown Vendor
-            if (filterVendor !== 'ALL' && supplierStr.toUpperCase().trim() !== filterVendor.toUpperCase().trim()) {
+            if (filterVendor !== 'ALL' && stdSupplier.toUpperCase().trim() !== filterVendor.toUpperCase().trim()) {
                 return;
             }
-            // 3. Filter Dropdown Status Operasional
             if (filterStatus !== 'ALL') {
                 if (filterStatus === 'Full' && !statusStr.includes('Full') && !statusStr.includes('Terinstal')) return;
                 if (filterStatus === 'Kosong' && !statusStr.includes('Kosong')) return;
@@ -1272,7 +1469,6 @@
                 if (filterStatus === 'Maintenance' && !statusStr.includes('Maintenance')) return;
                 if (filterStatus === 'Stop' && !statusStr.includes('Stop')) return;
             }
-            // 4. Filter Dropdown Posisi Lapangan
             if (filterLocation !== 'ALL' && trackingPosStr.toUpperCase().trim() !== filterLocation.toUpperCase().trim()) {
                 return;
             }
@@ -1285,18 +1481,36 @@
             else if (statusStr === 'Tidak Aktif / Stop Refill') statusBadgeColor = 'bg-light text-muted border';
             else if (statusStr === 'Maintenance') statusBadgeColor = 'bg-danger';
 
+            // --- BADGE KONTRAST STATUS PS DENGAN RINCIAN DETAIL (NOMOR & QTY) ---
+            let psBadge = '<span class="badge bg-light text-muted border">N/A</span>';
+            if (psStatusStr === 'Belum Issued') {
+                psBadge = '<span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i> Belum Issued</span>';
+            } else if (psStatusStr === 'Done Issued') {
+                psBadge = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Done Issued</span>';
+            }
+
+            let psDetailsDisplay = psBadge;
+            if (psStatusStr !== 'N/A') {
+                const noPs = data.psNumber || '-';
+                const qtyPs = data.psQty ? parseFloat(data.psQty).toLocaleString('id-ID') : '-';
+                psDetailsDisplay += `<div class="small mt-1 text-muted" style="font-size:0.75rem;">No: <b>${noPs}</b><br>Qty: <b>${qtyPs} kg</b></div>`;
+            }
+
             let outDate = cleanDateDisplay(data.dateOutbound);
             let inDate = cleanDateDisplay(data.dateInboundSite);
+            let emptyDate = cleanDateDisplay(data.dateEmpty); // Membaca Tanggal Empty
 
             trackingTable.innerHTML += `<tr>
                 <td><b>${idStr || '-'}</b></td>
                 <td class="text-danger fw-bold">${poNumberStr || '-'}</td>
                 <td>${cargoStr || '-'} <small class="text-success">(${data.weightKg ? parseFloat(data.weightKg).toLocaleString('id-ID') : 0} kg)</small></td>
                 <td><span class="badge ${statusBadgeColor}">${statusStr || 'Standby'}</span></td>
+                <td>${psDetailsDisplay}</td> <!-- Status, Nomor, dan Qty PS Terpadu -->
                 <td><span class="badge bg-primary bg-opacity-10 text-primary px-3 border border-primary border-opacity-25">${trackingPosStr || 'Warehouse'}</span></td>
                 <td>${rotationDisplay}</td>
                 <td>${outDate}</td>
                 <td>${inDate}</td>
+                <td class="text-warning fw-bold">${emptyDate}</td> <!-- Menampilkan Tanggal Empty -->
                 <td>
                     <div class="btn-group">
                         <button class="btn btn-sm btn-outline-secondary py-0 fw-bold" onclick="editRow('${idStr}')" title="Edit Data"><i class="fas fa-pen"></i></button>
@@ -1308,14 +1522,14 @@
             if(age > 0 && agingTable) {
                 let color = age > 8 ? 'text-danger fw-bold' : (age > 5 ? 'text-warning text-dark fw-bold' : 'text-success fw-bold');
                 let bgCircle = age > 8 ? 'bg-danger' : (age > 5 ? 'bg-warning' : 'bg-success');
-                agingTable.innerHTML += `<tr><td><b>${idStr}</b></td><td>${supplierStr}</td><td class="${color}">${age} Hari</td><td><i class="fas fa-circle ${bgCircle}"></i></td></tr>`;
+                agingTable.innerHTML += `<tr><td><b>${idStr}</b></td><td>${stdSupplier}</td><td class="${color}">${age} Hari</td><td><i class="fas fa-circle ${bgCircle}"></i></td></tr>`;
             }
         });
 
         if (vendorTable) {
             Object.keys(vendorData).forEach(v => {
                 let perf = vendorData[v].transit > 2 ? '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Delay Risk</span>' : '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Healthy</span>';
-                vendorTable.innerHTML += `<tr><td><b>${v}</b></td><td>${vendorData[v].total} Unit</td><td>${vendorData[v].transit} Unit</td><td>${perf}</td></tr>`;
+                vendorTable.innerHTML += `<tr><td><b>${v}</b></td><td>${vendorData[v].total} Isotank</td><td>${vendorData[v].transit} Unit</td><td>${perf}</td></tr>`;
             });
         }
 
@@ -1330,7 +1544,7 @@
         if (kpiUtilEl) kpiUtilEl.innerText = counts.total > 0 ? Math.round((counts.full / counts.total) * 100) + '%' : '0%';
         
         if (alertList && alertList.innerHTML === '') {
-            alertList.innerHTML = '<div class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> Operational Aman (Tidak ada unit overdue)</div>';
+            alertList.innerHTML = '<div class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> Operational Aman (Tidak ada isotank overdue)</div>';
         }
         
         renderVendorSummary();
@@ -1351,17 +1565,19 @@
         });
 
         if (siteUnits.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Tidak ada unit di area site (Warehouse / 25KT).</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Tidak ada isotank di area site (Warehouse / 25KT).</td></tr>';
             return;
         }
 
-        // 1. Inisialisasi variabel perhitungan internal system database (Sistem Aplikasi internal)
         let autoSystemCounts = { warehouse: 0, k25: 0, total: 0 };
         let autoSystemKg = { warehouse: 0, k25: 0, total: 0 };
+        let autoSystemFullCounts = { warehouse: 0, k25: 0, total: 0 };
+        let autoSystemFullKg = { warehouse: 0, k25: 0, total: 0 };
         
-        // 2. Inisialisasi variabel data real pemeriksaan fisik
         let realCounts = { warehouse: 0, k25: 0, total: 0 };
         let realKg = { warehouse: 0, k25: 0, total: 0 };
+        let realFullCounts = { warehouse: 0, k25: 0, total: 0 };
+        let realFullKg = { warehouse: 0, k25: 0, total: 0 };
         let stTodoCount = 0;
 
         siteUnits.forEach(data => {
@@ -1370,18 +1586,30 @@
             const stStatusStr = data.stockTakeStatus || '';
             const idStr = data.id || '';
             const weightVal = parseFloat(data.weightKg) || 0;
+            const isFull = statusStr.includes('Full') || statusStr.includes('Terinstal');
 
-            // Hitung internal system count & tonase
             if (trackingPosStr === 'Warehouse') {
                 autoSystemCounts.warehouse++;
                 autoSystemKg.warehouse += weightVal;
+                if (isFull) {
+                    autoSystemFullCounts.warehouse++;
+                    autoSystemFullKg.warehouse += weightVal;
+                }
             }
             if (trackingPosStr === '25KT') {
                 autoSystemCounts.k25++;
                 autoSystemKg.k25 += weightVal;
+                if (isFull) {
+                    autoSystemFullCounts.k25++;
+                    autoSystemFullKg.k25 += weightVal;
+                }
             }
             autoSystemCounts.total++;
             autoSystemKg.total += weightVal;
+            if (isFull) {
+                autoSystemFullCounts.total++;
+                autoSystemFullKg.total += weightVal;
+            }
 
             let stDoneThisWeek = false;
             if (data.lastStockTakeDate) {
@@ -1392,26 +1620,36 @@
                 }
             }
 
-            // Hitung Qty & Tonase Real (Fisik Sesuai / Match)
             const isMatch = stStatusStr.includes('Sesuai');
             if (isMatch) {
                 if (trackingPosStr === 'Warehouse') {
                     realCounts.warehouse++;
                     realKg.warehouse += weightVal;
+                    if (isFull) {
+                        realFullCounts.warehouse++;
+                        realFullKg.warehouse += weightVal;
+                    }
                 }
                 if (trackingPosStr === '25KT') {
                     realCounts.k25++;
                     realKg.k25 += weightVal;
+                    if (isFull) {
+                        realFullCounts.k25++;
+                        realFullKg.k25 += weightVal;
+                    }
                 }
                 realCounts.total++;
                 realKg.total += weightVal;
+                if (isFull) {
+                    realFullCounts.total++;
+                    realFullKg.total += weightVal;
+                }
             }
 
             if (filterPos !== 'ALL' && trackingPosStr !== filterPos) {
                 return;
             }
 
-            // Hitung Belum Di-Stock Take
             if (!stDoneThisWeek) {
                 stTodoCount++;
             }
@@ -1457,15 +1695,20 @@
         });
 
         // --- SISTEM DETERMINASI BASELINE ---
-        // Jika ada data manual system baselines (dari input menu ERP/SAP), gunakan data tersebut.
-        // Jika belum ada/masih kosong, gunakan hasil kalkulasi otomatis sistem internal.
         let finalSystemWarehouseQty = systemBaselines ? systemBaselines.warehouseQty : autoSystemCounts.warehouse;
         let finalSystemWarehouseKg = systemBaselines ? systemBaselines.warehouseKg : autoSystemKg.warehouse;
+        let finalSystemWarehouseFullQty = systemBaselines ? systemBaselines.warehouseFullQty : autoSystemFullCounts.warehouse;
+        let finalSystemWarehouseFullKg = systemBaselines ? systemBaselines.warehouseFullKg : autoSystemFullKg.warehouse;
+
         let finalSystemK25Qty = systemBaselines ? systemBaselines.k25Qty : autoSystemCounts.k25;
         let finalSystemK25Kg = systemBaselines ? systemBaselines.k25Kg : autoSystemKg.k25;
+        let finalSystemK25FullQty = systemBaselines ? systemBaselines.k25FullQty : autoSystemFullCounts.k25;
+        let finalSystemK25FullKg = systemBaselines ? systemBaselines.k25FullKg : autoSystemFullKg.k25;
 
         let finalSystemTotalQty = finalSystemWarehouseQty + finalSystemK25Qty;
         let finalSystemTotalKg = finalSystemWarehouseKg + finalSystemK25Kg;
+        let finalSystemTotalFullQty = finalSystemWarehouseFullQty + finalSystemK25FullQty;
+        let finalSystemTotalFullKg = finalSystemWarehouseFullKg + finalSystemFullKg;
 
         // Hubungkan data perhitungan ke komponen KPI Card Weekly Stock Take (Menampilkan Unit & Kg)
         const kpiSiteUnitsEl = document.getElementById('kpi-site-units');
@@ -1475,13 +1718,13 @@
 
         if (kpiSiteUnitsEl) {
             kpiSiteUnitsEl.innerHTML = `
-                <span>${finalSystemTotalQty} Unit</span>
+                <span>${finalSystemTotalQty} Isotank</span>
                 <span style="font-size:1.1rem; opacity:0.8; font-weight: 500;">${finalSystemTotalKg.toLocaleString('id-ID')} kg</span>
             `;
         }
         if (kpiStRealEl) {
             kpiStRealEl.innerHTML = `
-                <span>${realCounts.total} Unit</span>
+                <span>${realCounts.total} Isotank</span>
                 <span style="font-size:1.1rem; opacity:0.8; font-weight: 500;">${realKg.total.toLocaleString('id-ID')} kg</span>
             `;
         }
@@ -1489,12 +1732,12 @@
             const diffQty = finalSystemTotalQty - realCounts.total;
             const diffKg = finalSystemTotalKg - realKg.total;
             kpiStSelisihEl.innerHTML = `
-                <span class="${diffQty > 0 ? 'text-danger' : 'text-success'}">${diffQty} Unit</span>
+                <span class="${diffQty > 0 ? 'text-danger' : 'text-success'}">${diffQty} Isotank</span>
                 <span style="font-size:1.1rem; opacity:0.8; font-weight: 500;" class="${diffKg > 0 ? 'text-danger' : 'text-success'}">${diffKg.toLocaleString('id-ID')} kg</span>
             `;
         }
         if (kpiStTodoEl) {
-            kpiStTodoEl.innerText = `${stTodoCount} Unit`;
+            kpiStTodoEl.innerText = `${stTodoCount} Isotank`;
         }
 
         // Render data baris ke dalam Tabel Rekonsiliasi Lapangan (Unit & Kg)
@@ -1502,40 +1745,90 @@
         if (reconTbody) {
             const diffWarehouseQty = finalSystemWarehouseQty - realCounts.warehouse;
             const diffWarehouseKg = finalSystemWarehouseKg - realKg.warehouse;
+            const diffWarehouseFullQty = finalSystemWarehouseFullQty - realFullCounts.warehouse;
+            const diffWarehouseFullKg = finalSystemWarehouseFullKg - realFullKg.warehouse;
+
             const diffK25Qty = finalSystemK25Qty - realCounts.k25;
             const diffK25Kg = finalSystemK25Kg - realKg.k25;
+            const diffK25FullQty = finalSystemK25FullQty - realFullCounts.k25;
+            const diffK25FullKg = finalSystemK25FullKg - realFullKg.k25;
+
             const diffTotalQty = finalSystemTotalQty - realCounts.total;
             const diffTotalKg = finalSystemTotalKg - realKg.total;
+            const diffTotalFullQty = finalSystemTotalFullQty - realFullCounts.total;
+            const diffTotalFullKg = finalSystemTotalFullKg - realFullKg.total;
 
             const formatNum = (num) => num === 0 ? '0' : num.toLocaleString('id-ID');
+            const formatDiff = (num) => {
+                if (num === 0) return '0';
+                if (num < 0) return `+${Math.abs(num)}`;
+                return `-${num}`;
+            };
+            const formatDiffKg = (num) => {
+                if (num === 0) return '0';
+                if (num < 0) return `+${Math.abs(num).toLocaleString('id-ID')}`;
+                return `-${num.toLocaleString('id-ID')}`;
+            };
 
             reconTbody.innerHTML = `
-                <tr>
-                    <td class="fw-bold">Warehouse (Gudang)</td>
+                <!-- AREA WAREHOUSE -->
+                <tr class="fw-bold bg-light">
+                    <td class="text-start">Warehouse (Total Isotank)</td>
                     <td>${finalSystemWarehouseQty} Unit</td>
                     <td>${formatNum(finalSystemWarehouseKg)} kg</td>
                     <td>${realCounts.warehouse} Unit</td>
                     <td>${formatNum(realKg.warehouse)} kg</td>
-                    <td class="${diffWarehouseQty > 0 ? 'text-danger fw-bold' : 'text-success'}">${diffWarehouseQty} Unit</td>
-                    <td class="${diffWarehouseKg > 0 ? 'text-danger fw-bold' : 'text-success'}">${formatNum(diffWarehouseKg)} kg</td>
+                    <td class="${diffWarehouseQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffWarehouseQty)} Unit</td>
+                    <td class="${diffWarehouseKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffWarehouseKg)} kg</td>
                 </tr>
-                <tr>
-                    <td class="fw-bold">25KT (Area Instalasi)</td>
+                <tr class="table-light">
+                    <td class="text-start ps-4 text-muted"><i class="fas fa-caret-right me-1"></i> Warehouse (Terisi/Full Only)</td>
+                    <td>${finalSystemWarehouseFullQty} Unit</td>
+                    <td>${formatNum(finalSystemWarehouseFullKg)} kg</td>
+                    <td>${realFullCounts.warehouse} Unit</td>
+                    <td>${formatNum(realFullKg.warehouse)} kg</td>
+                    <td class="${diffWarehouseFullQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffWarehouseFullQty)} Unit</td>
+                    <td class="${diffWarehouseFullKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffWarehouseFullKg)} kg</td>
+                </tr>
+
+                <!-- AREA 25KT -->
+                <tr class="fw-bold bg-light border-top">
+                    <td class="text-start">25KT (Total Isotank)</td>
                     <td>${finalSystemK25Qty} Unit</td>
                     <td>${formatNum(finalSystemK25Kg)} kg</td>
                     <td>${realCounts.k25} Unit</td>
                     <td>${formatNum(realKg.k25)} kg</td>
-                    <td class="${diffK25Qty > 0 ? 'text-danger fw-bold' : 'text-success'}">${diffK25Qty} Unit</td>
-                    <td class="${diffK25Kg > 0 ? 'text-danger fw-bold' : 'text-success'}">${formatNum(diffK25Kg)} kg</td>
+                    <td class="${diffK25Qty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffK25Qty)} Unit</td>
+                    <td class="${diffK25Kg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffK25Kg)} kg</td>
                 </tr>
-                <tr class="table-secondary fw-bold text-dark">
-                    <td>TOTAL SITE</td>
+                <tr class="table-light">
+                    <td class="text-start ps-4 text-muted"><i class="fas fa-caret-right me-1"></i> 25KT (Terinstal/Full Only)</td>
+                    <td>${finalSystemK25FullQty} Unit</td>
+                    <td>${formatNum(finalSystemK25FullKg)} kg</td>
+                    <td>${realFullCounts.k25} Unit</td>
+                    <td>${formatNum(realFullKg.k25)} kg</td>
+                    <td class="${diffK25FullQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffK25FullQty)} Unit</td>
+                    <td class="${diffK25FullKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffK25FullKg)} kg</td>
+                </tr>
+
+                <!-- REKONSILIASI TOTAL SITE -->
+                <tr class="table-secondary fw-bold text-dark border-top-double">
+                    <td class="text-start text-uppercase">TOTAL SITE (Semua Isotank)</td>
                     <td>${finalSystemTotalQty} Unit</td>
                     <td>${formatNum(finalSystemTotalKg)} kg</td>
                     <td>${realCounts.total} Unit</td>
                     <td>${formatNum(realKg.total)} kg</td>
-                    <td class="${diffTotalQty > 0 ? 'text-danger' : 'text-success'}">${diffTotalQty} Unit</td>
-                    <td class="${diffTotalKg > 0 ? 'text-danger' : 'text-success'}">${formatNum(diffTotalKg)} kg</td>
+                    <td class="${diffTotalQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffTotalQty)} Unit</td>
+                    <td class="${diffTotalKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffTotalKg)} kg</td>
+                </tr>
+                <tr class="table-info fw-bold text-dark">
+                    <td class="text-start text-uppercase">TOTAL SITE (Terisi/Full Only)</td>
+                    <td>${finalSystemTotalFullQty} Unit</td>
+                    <td>${formatNum(finalSystemTotalFullKg)} kg</td>
+                    <td>${realFullCounts.total} Unit</td>
+                    <td>${formatNum(realFullKg.total)} kg</td>
+                    <td class="${diffTotalFullQty > 0 ? 'text-danger' : 'text-success'}">${formatDiff(diffTotalFullQty)} Unit</td>
+                    <td class="${diffTotalFullKg > 0 ? 'text-danger' : 'text-success'}">${formatDiffKg(diffTotalFullKg)} kg</td>
                 </tr>
             `;
         }
@@ -1579,7 +1872,7 @@
         const stNotes = document.getElementById('stQuickNotes').value.trim();
 
         if (!stDate) {
-            alert("Tanggal pemeriksaan fisik wajib diisi!");
+            showCustomAlert("Tanggal pemeriksaan fisik wajib diisi!", "Gagal");
             return;
         }
 
@@ -1625,7 +1918,12 @@
         });
 
         let vendors = {};
-        masterData.forEach(d => { if(d.supplier) vendors[d.supplier] = (vendors[d.supplier] || 0) + 1; });
+        masterData.forEach(d => { 
+            if(d.supplier) {
+                const stdSupplier = getStandardVendorName(d.supplier);
+                vendors[stdSupplier] = (vendors[stdSupplier] || 0) + 1; 
+            }
+        });
         
         myCharts.vendor = new Chart(ctxVendor, {
             type: 'bar',
@@ -1665,6 +1963,10 @@
             form.style.display = 'block';
             document.getElementById('histPo').value = '';
             document.getElementById('histCargo').value = '';
+            document.getElementById('histWeight').value = '';
+            document.getElementById('histPsStatus').value = 'N/A';
+            document.getElementById('histPsNo').value = '';
+            document.getElementById('histPsQty').value = '';
             document.getElementById('histSupplier').value = '';
             document.getElementById('histOut').value = '';
             document.getElementById('histIn').value = '';
@@ -1675,23 +1977,43 @@
 
     function renderHistoryList() {
         const tbody = document.getElementById('historyTableBody');
+        if (!tbody) return;
         tbody.innerHTML = '';
         
         const item = masterData.find(u => u.id === currentHistoryUnitId);
         if(!item || !item.history || item.history.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada riwayat siklus tersimpan.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">Belum ada riwayat siklus tersimpan.</td></tr>';
             return;
         }
 
         const sortedHistory = [...item.history].sort((a,b) => new Date(a.outbound) - new Date(b.outbound));
 
         sortedHistory.forEach((hist, index) => {
+            const histWeight = hist.weightKg ? parseFloat(hist.weightKg).toLocaleString('id-ID') : '-';
+            const histPsStatus = hist.psStatus || 'N/A';
+            
+            let histPsBadge = '<span class="badge bg-light text-muted border-0">N/A</span>';
+            if (histPsStatus === 'Belum Issued') {
+                histPsBadge = '<span class="badge bg-danger small">Belum Issued</span>';
+            } else if (histPsStatus === 'Done Issued') {
+                histPsBadge = '<span class="badge bg-success small">Done Issued</span>';
+            }
+
+            let histPsDetails = histPsBadge;
+            if (histPsStatus !== 'N/A') {
+                const noPs = hist.psNumber || '-';
+                const qtyPs = hist.psQty ? parseFloat(hist.psQty).toLocaleString('id-ID') : '-';
+                histPsDetails += `<div class="small text-muted" style="font-size:0.75rem;">No: ${noPs}<br>Qty: ${qtyPs} kg</div>`;
+            }
+
             tbody.innerHTML += `<tr>
                 <td><strong class="text-danger">${hist.po || '-'}</strong></td>
                 <td>${hist.cargo || '-'}</td>
+                <td><span class="text-success fw-bold">${histWeight} kg</span></td>
+                <td>${histPsDetails}</td> <!-- Menampilkan Status, Nomor & Qty PS pada riwayat -->
                 <td>${hist.supplier || '-'}</td>
-                <td>${hist.outbound || '-'}</td>
-                <td>${hist.inbound || '-'}</td>
+                <td>${cleanDateDisplay(hist.outbound)}</td>
+                <td>${cleanDateDisplay(hist.inbound)}</td>
                 <td class="text-center">
                     <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteHistoryItem(${index})" title="Hapus Riwayat"><i class="fas fa-trash-alt"></i></button>
                 </td>
@@ -1703,11 +2025,15 @@
         const po = document.getElementById('histPo').value.toUpperCase().trim();
         const cargo = document.getElementById('histCargo').value.trim();
         const supplier = document.getElementById('histSupplier').value.trim();
+        const weight = parseFloat(document.getElementById('histWeight').value) || 0;
+        const psStatus = document.getElementById('histPsStatus').value;
+        const psNo = document.getElementById('histPsNo').value.toUpperCase().trim();
+        const psQty = parseFloat(document.getElementById('histPsQty').value) || 0;
         const outbound = document.getElementById('histOut').value;
         const inbound = document.getElementById('histIn').value;
 
         if(!outbound || !inbound) {
-            alert("Tanggal Outbound dan Inbound wajib diisi!");
+            showCustomAlert("Tanggal Outbound dan Inbound wajib diisi!", "Gagal");
             return;
         }
 
@@ -1720,7 +2046,11 @@
             masterData[itemIndex].history.push({
                 po: po,
                 cargo: cargo,
+                weightKg: weight,
                 supplier: supplier,
+                psStatus: psStatus,
+                psNumber: psNo,
+                psQty: psQty,
                 outbound: outbound,
                 inbound: inbound
             });
@@ -1731,7 +2061,7 @@
             toggleAddHistoryForm(false);
             renderHistoryList();
             
-            logActivity(currentHistoryUnitId, "EDIT", `Siklus logistik masa lalu dengan nomor PO ${po} berhasil ditambahkan manual ke riwayat log.`);
+            logActivity(currentHistoryUnitId, "EDIT", `Siklus logistik masa lalu dengan nomor PO ${po} (${weight.toLocaleString('id-ID')} kg) berhasil ditambahkan manual ke riwayat log.`);
         }
     }
 
@@ -1789,6 +2119,10 @@
         let rawInbound = document.getElementById('dateInboundSite').value;
         let rotationsValue = parseInt(document.getElementById('rotations').value) || 0;
         let weightValue = parseFloat(document.getElementById('weightKg').value) || 0;
+        let psStatusValue = document.getElementById('psStatus').value;
+        let psNumberValue = document.getElementById('psNumber').value.toUpperCase().trim();
+        let psQtyValue = parseFloat(document.getElementById('psQty').value) || 0;
+        let dateEmptyValue = document.getElementById('dateEmpty').value;
 
         let newEntry = {
             id: currentId,
@@ -1802,6 +2136,10 @@
             dateOutbound: (rawOutbound === "" || rawOutbound.startsWith('0001')) ? "" : rawOutbound,
             dateInboundSite: (rawInbound === "" || rawInbound.startsWith('0001')) ? "" : rawInbound,
             rotations: rotationsValue,
+            psStatus: psStatusValue, 
+            psNumber: psNumberValue, // Binding Nomor PS
+            psQty: psQtyValue,       // Binding Qty PS
+            dateEmpty: (dateEmptyValue === "" || dateEmptyValue.startsWith('0001')) ? "" : dateEmptyValue, // Binding Tanggal Empty
             history: [], 
             lastStockTakeDate: "",
             stockTakeStatus: "",
@@ -1809,11 +2147,11 @@
         };
 
         let actionLogType = "ADD";
-        let descLogText = `Unit baru ${currentId} ditambahkan ke database lapangan.`;
+        let descLogText = `Isotank baru ${currentId} ditambahkan ke database lapangan.`;
 
         if (isEditMode) {
             actionLogType = "EDIT";
-            descLogText = `Unit ${currentId} diperbarui datanya. Posisi: ${newEntry.trackingPos}, Status: ${newStatus}.`;
+            descLogText = `Isotank ${currentId} diperbarui datanya. Posisi: ${newEntry.trackingPos}, Status: ${newStatus}, Status PS: ${psStatusValue}.`;
             
             const oldItem = masterData.find(u => u.id === (oldId || currentId));
             if(oldItem) {
@@ -1879,12 +2217,16 @@
         document.getElementById('status').value = item.status;
         document.getElementById('trackingPos').value = item.trackingPos;
         document.getElementById('supplier').value = item.supplier || '';
+        document.getElementById('psStatus').value = item.psStatus || 'N/A'; 
+        document.getElementById('psNumber').value = item.psNumber || ''; // Memuat Nomor PS
+        document.getElementById('psQty').value = item.psQty || 0;       // Memuat Qty PS
         
         document.getElementById('rotations').value = item.rotations || 0;
         document.getElementById('rotationNotice').style.display = 'none';
 
         document.getElementById('dateOutbound').value = (item.dateOutbound && typeof item.dateOutbound === 'string' && !item.dateOutbound.startsWith('0001')) ? item.dateOutbound : '';
         document.getElementById('dateInboundSite').value = (item.dateInboundSite && typeof item.dateInboundSite === 'string' && !item.dateInboundSite.startsWith('0001')) ? item.dateInboundSite : '';
+        document.getElementById('dateEmpty').value = (item.dateEmpty && typeof item.dateEmpty === 'string' && !item.dateEmpty.startsWith('0001')) ? item.dateEmpty : ''; // Memuat Tanggal Empty
     }
 
     function cancelEdit() {
@@ -1897,6 +2239,10 @@
         document.getElementById('rotationNotice').style.display = 'none';
         document.getElementById('rotations').value = 0;
         document.getElementById('weightKg').value = 0;
+        document.getElementById('psStatus').value = 'N/A'; 
+        document.getElementById('psNumber').value = ''; 
+        document.getElementById('psQty').value = 0; 
+        document.getElementById('dateEmpty').value = ''; 
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit me-2"></i> Form Update Data Lapangan';
     }
 
@@ -1910,17 +2256,21 @@
         masterData.forEach((item, idx) => {
             formattedExportData.push({
                 "No": idx + 1,
-                "No. Unit / ID": item.id || '-',
+                "No. Isotank": item.id || '-',
                 "No. PO Aktif": item.poNumber || '-',
                 "Tipe Unit": item.type || '-',
                 "Isi Muatan": item.cargo || '-',
                 "Berat Muatan (kg)": item.weightKg || 0,
                 "Status": item.status || '-',
+                "Status PS (Deduct)": item.psStatus || 'N/A', 
+                "Nomor PS": item.psNumber || '-',
+                "Qty PS (kg)": item.psQty || 0,
                 "Posisi": item.trackingPos || '-',
                 "Supplier": item.supplier || '-',
                 "Total Rotasi (Trip)": `${item.rotations || 0}x`,
                 "Tgl Outbound": cleanDateDisplay(item.dateOutbound),
                 "Tgl Inbound": cleanDateDisplay(item.dateInboundSite),
+                "Tgl Empty (Habis)": cleanDateDisplay(item.dateEmpty), // Menyertakan Tanggal Empty di Excel
                 "Tgl Stock Take Terakhir": cleanDateDisplay(item.lastStockTakeDate),
                 "Status Pemeriksaan Fisik": item.stockTakeStatus || '-',
                 "Catatan Stock Take": item.stockTakeNotes || '-',
@@ -1931,17 +2281,21 @@
                 item.history.forEach((hist, hIdx) => {
                     formattedExportData.push({
                         "No": "",
-                        "No. Unit / ID": `-> Histori ${item.id || ''}`,
+                        "No. Isotank": `-> Histori ${item.id || ''}`,
                         "No. PO Aktif": hist.po || '-',
                         "Tipe Unit": "",
                         "Isi Muatan": hist.cargo || '-',
-                        "Berat Muatan (kg)": "-",
+                        "Berat Muatan (kg)": hist.weightKg || 0, 
                         "Status": "Siklus Selesai (Completed)",
+                        "Status PS (Deduct)": hist.psStatus || 'N/A',
+                        "Nomor PS": hist.psNumber || '-',
+                        "Qty PS (kg)": hist.psQty || 0,
                         "Posisi": "ARCHIVED",
                         "Supplier": hist.supplier || '-',
                         "Total Rotasi (Trip)": `Siklus ke-${hIdx + 1}`,
                         "Tgl Outbound": hist.outbound || '-',
                         "Tgl Inbound": hist.inbound || '-',
+                        "Tgl Empty (Habis)": "-",
                         "Tgl Stock Take Terakhir": "-",
                         "Status Pemeriksaan Fisik": "-",
                         "Catatan Stock Take": "-",
@@ -1956,7 +2310,7 @@
         XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan_Logistik_Lengkap");
 
         worksheet['!cols'] = [
-            {wch: 5}, {wch: 22}, {wch: 15}, {wch: 12}, {wch: 15}, {wch: 15}, 
+            {wch: 5}, {wch: 22}, {wch: 15}, {wch: 12}, {wch: 15}, {wch: 15}, {wch: 18},
             {wch: 25}, {wch: 15}, {wch: 18}, {wch: 18}, {wch: 15}, 
             {wch: 15}, {wch: 22}, {wch: 25}, {wch: 30}, {wch: 25}
         ];
